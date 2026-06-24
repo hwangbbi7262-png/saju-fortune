@@ -11,7 +11,7 @@
 <meta property="og:site_name" content="오늘의 사주 운세" />
 <meta property="og:title" content="오늘의 사주 운세 🌙 사주·궁합·미래 아기까지" />
 <meta property="og:description" content="생년월일시로 보는 정통 사주! 나의 기운, 연인 궁합, 결혼하면 낳을 아기 성격과 이름까지 무료로 확인하세요." />
-<meta property="og:image" content="https://hwangbbi7262-png.github.io/saju-fortune/og.png?v=1" />
+<meta property="og:image" content="https://hwangbbi7262-png.github.io/saju-fortune/og.png?v=2" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:url" content="https://hwangbbi7262-png.github.io/saju-fortune/" />
@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="오늘의 사주 운세 🌙 사주·궁합·미래 아기까지" />
 <meta name="twitter:description" content="생년월일시로 보는 정통 사주! 나의 기운, 궁합, 미래 아기까지 무료로." />
-<meta name="twitter:image" content="https://hwangbbi7262-png.github.io/saju-fortune/og.png?v=1" />
+<meta name="twitter:image" content="https://hwangbbi7262-png.github.io/saju-fortune/og.png?v=2" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
@@ -342,7 +342,11 @@
       <div class="hint" id="calHint">※ 사주는 양력 기준으로 계산됩니다. 음력 생일은 양력으로 변환 후 입력하면 더 정확해요.</div>
 
       <div class="personB" id="personB" style="display:none">
-        <div class="pb-title">💞 상대방 정보</div>
+        <div class="seg" id="relTypeSeg" style="margin-bottom:16px">
+          <button data-v="love" class="on">💑 연인 궁합</button>
+          <button data-v="friend">👯 친구 궁합</button>
+        </div>
+        <div class="pb-title" id="pbTitle">💞 상대방 정보</div>
         <label>상대 이름</label>
         <input id="bname" type="text" placeholder="상대 이름" maxlength="12" autocomplete="off" />
         <label>성별</label>
@@ -689,7 +693,8 @@ const BABY_NAMES={
 };
 function pick2(r,arr){ if(arr.length<=2) return arr.slice(); const i=Math.floor(r()*arr.length); let j; do{ j=Math.floor(r()*arr.length); }while(j===i); return [arr[i],arr[j]]; }
 
-function calcCompat(A,B){
+function calcCompat(A,B,relType){
+  const friend = relType==='friend';
   const elA=HS_EL[A.saju.dStem], elB=HS_EL[B.saju.dStem];
   const er=elRel(elA,elB);
   const bA=A.saju.yBranch, bB=B.saju.yBranch;
@@ -700,36 +705,56 @@ function calcCompat(A,B){
 
   const elPts={gen:30,same:24,neutral:18,ctrl:16}[er];
   const brPts={육합:28,삼합:24,충:12,none:16}[branchRel];
-  const r=mulberry32(hashStr(A.name+A.y+A.m+A.d+'x'+B.name+B.y+B.m+B.d));
+  const r=mulberry32(hashStr(A.name+A.y+A.m+A.d+'x'+B.name+B.y+B.m+B.d+relType));
   let score=30+elPts+brPts+Math.floor(r()*8);
   score=Math.max(48,Math.min(99,score));
 
+  const harmonic=er==='gen'&&(branchRel==='육합'||branchRel==='삼합');
   // 라벨/멘트
   let label,msg;
-  if(er==='gen'&&(branchRel==='육합'||branchRel==='삼합')){ label='천생연분 ✦'; msg='서로를 살리고 채워주는, 그야말로 운명의 짝이에요. 함께 있으면 둘 다 더 좋은 사람이 됩니다. 놓치면 후회할 인연.'; }
-  else if(er==='gen'){ label='서로를 키우는 사이'; msg='한쪽이 다른 쪽의 부족함을 채워주는 상생의 조합이에요. 티격태격해도 결국 서로를 성장시키는 인연입니다.'; }
-  else if(er==='same'){ label='닮은꼴 케미'; msg='기질이 비슷해 말 안 해도 통하는 편안한 사이예요. 다만 둘 다 같은 약점을 가질 수 있으니 한 명은 양보가 필요해요.'; }
-  else if(er==='ctrl'||branchRel==='충'){ label='불꽃 케미 🔥'; msg='강하게 끌리지만 그만큼 부딪히는 사이예요. 밀당의 긴장감이 매력이지만, 서로를 인정하면 누구보다 뜨거운 인연이 됩니다.'; }
-  else { label='무난한 인연'; msg='크게 튀지 않지만 노력하는 만큼 깊어지는 사이예요. 서로 배려하면 오래가는 든든한 인연이 됩니다.'; }
+  if(friend){
+    if(harmonic){ label='천생 단짝 ✦'; msg='서로를 끌어주고 채워주는 환상의 케미예요. 곁에 있으면 둘 다 더 빛나는, 평생 갈 베프입니다.'; }
+    else if(er==='gen'){ label='서로를 키우는 친구'; msg='한 명이 처지면 다른 한 명이 끌어올려주는 사이. 함께할수록 더 좋은 사람이 됩니다.'; }
+    else if(er==='same'){ label='닮은꼴 소울메이트'; msg='취향도 텐션도 척하면 척! 말 안 해도 통하는 편한 친구예요. 가끔은 서로의 거울이 되어주세요.'; }
+    else if(er==='ctrl'||branchRel==='충'){ label='애증의 케미 🔥'; msg='투닥거리면서도 안 보면 보고 싶은 사이. 자극이 되는 친구라 지루할 틈이 없어요.'; }
+    else { label='은근 오래가는 친구'; msg='요란하진 않아도 꾸준히 곁을 지키는 진국 우정이에요. 노력한 만큼 깊어집니다.'; }
+  } else {
+    if(harmonic){ label='천생연분 ✦'; msg='서로를 살리고 채워주는, 그야말로 운명의 짝이에요. 함께 있으면 둘 다 더 좋은 사람이 됩니다. 놓치면 후회할 인연.'; }
+    else if(er==='gen'){ label='서로를 키우는 사이'; msg='한쪽이 다른 쪽의 부족함을 채워주는 상생의 조합이에요. 티격태격해도 결국 서로를 성장시키는 인연입니다.'; }
+    else if(er==='same'){ label='닮은꼴 케미'; msg='기질이 비슷해 말 안 해도 통하는 편안한 사이예요. 다만 둘 다 같은 약점을 가질 수 있으니 한 명은 양보가 필요해요.'; }
+    else if(er==='ctrl'||branchRel==='충'){ label='불꽃 케미 🔥'; msg='강하게 끌리지만 그만큼 부딪히는 사이예요. 밀당의 긴장감이 매력이지만, 서로를 인정하면 누구보다 뜨거운 인연이 됩니다.'; }
+    else { label='무난한 인연'; msg='크게 튀지 않지만 노력하는 만큼 깊어지는 사이예요. 서로 배려하면 오래가는 든든한 인연이 됩니다.'; }
+  }
 
-  // 커플 별명
+  // 관계 별명
   let coupleNick;
-  if(er==='gen'&&(branchRel==='육합'||branchRel==='삼합')) coupleNick='환상의 천생연분 커플 💞';
-  else if(er==='gen') coupleNick='서로를 키우는 성장 커플 🌱';
-  else if(er==='same') coupleNick='찰떡같은 닮은꼴 커플 🍒';
-  else if(er==='ctrl'||branchRel==='충') coupleNick='불꽃 튀는 밀당 커플 🔥';
-  else coupleNick='은근히 잘 맞는 무던 커플 ☕';
+  if(friend){
+    if(harmonic) coupleNick='천생 단짝 베프 👯';
+    else if(er==='gen') coupleNick='서로 채워주는 성장 친구 🌱';
+    else if(er==='same') coupleNick='소울메이트급 닮은꼴 친구 🍒';
+    else if(er==='ctrl'||branchRel==='충') coupleNick='티격태격 정드는 애증 친구 🔥';
+    else coupleNick='편하게 오래가는 무던 친구 ☕';
+  } else {
+    if(harmonic) coupleNick='환상의 천생연분 커플 💞';
+    else if(er==='gen') coupleNick='서로를 키우는 성장 커플 🌱';
+    else if(er==='same') coupleNick='찰떡같은 닮은꼴 커플 🍒';
+    else if(er==='ctrl'||branchRel==='충') coupleNick='불꽃 튀는 밀당 커플 🔥';
+    else coupleNick='은근히 잘 맞는 무던 커플 ☕';
+  }
 
   // 세부 궁합 점수
   const isGen=er==='gen', isSame=er==='same', isCtrl=er==='ctrl';
   const yh=branchRel==='육합', sh=branchRel==='삼합', ch=branchRel==='충';
   function sub(bias){ return Math.max(45,Math.min(99, Math.round(score*0.55 + 22 + bias + (r()*12-6)))); }
+  const subLabels = friend
+    ? ['첫인상','성격 궁합','텐션 · 케미','대화 · 소통','의리 · 오래감']
+    : ['첫인상 · 끌림','성격 궁합','애정 · 설렘','대화 · 소통','장기 · 결혼운'];
   const subScores=[
-    {label:'첫인상 · 끌림', score:sub((isCtrl?10:isGen?5:isSame?-2:-4)+(ch?6:0))},
-    {label:'성격 궁합',    score:sub(isSame?10:isGen?5:isCtrl?-6:0)},
-    {label:'애정 · 설렘',  score:sub((isGen?7:0)+(yh?6:0)+(isCtrl?5:0))},
-    {label:'대화 · 소통',  score:sub((isSame?8:0)+(yh?5:0)+(isGen?2:0)+(ch?-6:0))},
-    {label:'장기 · 결혼운', score:sub((isGen?7:0)+(sh?6:0)+(yh?5:0)+((isCtrl||ch)?-9:0))}
+    {label:subLabels[0], score:sub((isCtrl?10:isGen?5:isSame?-2:-4)+(ch?6:0))},
+    {label:subLabels[1], score:sub(isSame?10:isGen?5:isCtrl?-6:0)},
+    {label:subLabels[2], score:sub((isGen?7:0)+(yh?6:0)+(isCtrl?5:0))},
+    {label:subLabels[3], score:sub((isSame?8:0)+(yh?5:0)+(isGen?2:0)+(ch?-6:0))},
+    {label:subLabels[4], score:sub((isGen?7:0)+(sh?6:0)+(yh?5:0)+((isCtrl||ch)?-9:0))}
   ];
 
   // 잘 맞는 점 / 조심할 점
@@ -749,32 +774,41 @@ function calcCompat(A,B){
   const cautions=CAUTION[er].slice();
   if(ch) cautions.push('말다툼이 잦을 수 있으니 한 박자 쉬어가기');
 
-  // 일간 케미 + 각자 연애 스타일
+  // 일간 케미 + 각자 스타일
   const igA=ILGAN[A.saju.dStem], igB=ILGAN[B.saju.dStem];
   const relLine={gen:'서로의 기운을 북돋우는 상생의 만남',same:'같은 결을 가진 닮은꼴의 만남',ctrl:'서로를 단단하게 만드는 자극의 만남',neutral:'천천히 알아갈수록 깊어지는 만남'}[er];
   const chem=`‘${igA.nick}’ 같은 ${A.name} 님과 ‘${igB.nick}’ 같은 ${B.name} 님. ${relLine}이에요.`;
+  const styleA = friend ? `${A.name} 님은 ${igA.kw.join('·')}의 매력을 지닌 친구예요.` : igA.love;
+  const styleB = friend ? `${B.name} 님은 ${igB.kw.join('·')}의 매력을 지닌 친구예요.` : igB.love;
+  const styleTitle = friend ? '이런 친구예요' : '연애 스타일';
 
-  // 추천 데이트 & 조언
+  // 추천 활동 & 조언
   const DATE_SPOT=['분위기 좋은 루프탑·야경 명소','조용한 미술관·전시 데이트','벚꽃/단풍 명소 산책','바닷가 드라이브','감성 카페 투어','놀이공원에서 신나게','맛집 탐방 + 야시장','한적한 근교 당일치기'];
-  const datePlace=DATE_SPOT[Math.floor(r()*DATE_SPOT.length)];
-  const advice={gen:'지금처럼 서로를 아끼면 오래도록 빛날 인연이에요.',same:'비슷한 만큼, 가끔은 서로의 다름을 즐겨보세요.',ctrl:'뜨거운 만큼 식기도 쉬워요. 말로 자주 사랑을 확인하세요.',neutral:'작은 표현 하나가 이 인연을 특별하게 만듭니다.'}[er];
+  const FRIEND_SPOT=['카페에서 수다 삼매경','맛집 탐방 + 디저트 투어','노래방에서 스트레스 풀기','전시·팝업 같이 구경','캠핑·여행 같이 떠나기','운동·등산 함께하기','쇼핑하며 하루 보내기','맥주 한잔 with 깊은 대화'];
+  const activity=(friend?FRIEND_SPOT:DATE_SPOT)[Math.floor(r()*(friend?FRIEND_SPOT:DATE_SPOT).length)];
+  const advice= friend
+    ? {gen:'서로를 응원하는 지금처럼이면 평생 갈 우정이에요.',same:'너무 비슷해 가끔 부딪혀도, 그게 진짜 친구라는 증거예요.',ctrl:'투닥거려도 결국 찾게 되는 사이. 솔직함이 우정을 지켜요.',neutral:'먼저 연락하는 한 명이 이 우정을 오래 가게 만들어요.'}[er]
+    : {gen:'지금처럼 서로를 아끼면 오래도록 빛날 인연이에요.',same:'비슷한 만큼, 가끔은 서로의 다름을 즐겨보세요.',ctrl:'뜨거운 만큼 식기도 쉬워요. 말로 자주 사랑을 확인하세요.',neutral:'작은 표현 하나가 이 인연을 특별하게 만듭니다.'}[er];
 
-  // 미래 아기 — 부모 두 오행 합성
-  const GEN_EL={목:'화',화:'토',토:'금',금:'수',수:'목'};
-  const babyCand=[elA,elB,GEN_EL[elA],GEN_EL[elB]];
-  const babyEl=babyCand[Math.floor(r()*babyCand.length)];
-  const bb=BABY[babyEl];
-  const lookLike=r()<0.5?A.name:B.name;
-  const persLike=lookLike===A.name?B.name:A.name;
-  const taemyung=bb.names[Math.floor(r()*bb.names.length)];
-  const bn=BABY_NAMES[babyEl];
-  const boyNames=pick2(r,bn.boy), girlNames=pick2(r,bn.girl);
-  const baby={el:babyEl, nick:bb.nick, emo:bb.emo, temper:bb.temper, talent:bb.talent, caution:bb.caution, care:bb.care, lookLike, persLike, taemyung, boyNames, girlNames};
+  // 미래 아기 — 연인 궁합에서만
+  let baby=null;
+  if(!friend){
+    const GEN_EL={목:'화',화:'토',토:'금',금:'수',수:'목'};
+    const babyCand=[elA,elB,GEN_EL[elA],GEN_EL[elB]];
+    const babyEl=babyCand[Math.floor(r()*babyCand.length)];
+    const bb=BABY[babyEl];
+    const lookLike=r()<0.5?A.name:B.name;
+    const persLike=lookLike===A.name?B.name:A.name;
+    const taemyung=bb.names[Math.floor(r()*bb.names.length)];
+    const bn=BABY_NAMES[babyEl];
+    const boyNames=pick2(r,bn.boy), girlNames=pick2(r,bn.girl);
+    baby={el:babyEl, nick:bb.nick, emo:bb.emo, temper:bb.temper, talent:bb.talent, caution:bb.caution, care:bb.care, lookLike, persLike, taemyung, boyNames, girlNames};
+  }
 
   const detail=[];
   detail.push({t:'오행 궁합', v:`${A.name}(${elA}) · ${B.name}(${elB}) → ${er==='gen'?'상생(서로 살림) ✨':er==='same'?'비화(닮은꼴)':er==='ctrl'?'상극(끌림과 긴장) 🔥':'평이한 관계'}`});
   detail.push({t:'띠 궁합', v: branchRel==='육합'?'육합 — 찰떡같이 잘 맞는 환상의 짝 💞':branchRel==='삼합'?'삼합 — 함께하면 일이 잘 풀리는 길한 조합 🍀':branchRel==='충'?'상충 — 스파크 튀지만 정드는 사이 ⚡':'무난한 띠 조합'});
-  return {score,label,msg,coupleNick,subScores,merits,cautions,chem,aLove:igA.love,bLove:igB.love,datePlace,advice,baby,detail,elA,elB};
+  return {relType,friend,score,label,msg,coupleNick,subScores,merits,cautions,chem,styleA,styleB,styleTitle,activity,advice,baby,detail,elA,elB};
 }
 
 /* ============================================================
@@ -1073,12 +1107,12 @@ function renderCompat(A,B,c){
   return `
   <div class="rcard" id="capture">
     <div class="rhead reveal" style="animation-delay:.05s">
-      <div class="who">✦ 두 사람의 사주 궁합 ✦</div>
-      <h2>${A.name} 💞 ${B.name}</h2>
+      <div class="who">✦ 두 사람의 ${c.friend?'우정':'사주'} 궁합 ✦</div>
+      <h2>${A.name} ${c.friend?'👯':'💞'} ${B.name}</h2>
     </div>
     <div class="compat-top reveal" style="animation-delay:.12s">
       <div class="cp"><div class="orb2" style="background:radial-gradient(circle at 35% 30%,${za.bg},#1c1238 120%)"><div class="em">${za.face}</div></div><div class="cnm">${A.name}</div><div class="czd">${zoa}띠 · ${starA}</div></div>
-      <div class="vs">♥</div>
+      <div class="vs">${c.friend?'🤝':'♥'}</div>
       <div class="cp"><div class="orb2" style="background:radial-gradient(circle at 35% 30%,${zb.bg},#1c1238 120%)"><div class="em">${zb.face}</div></div><div class="cnm">${B.name}</div><div class="czd">${zob}띠 · ${starB}</div></div>
     </div>
     <div class="compat-score reveal" style="animation-delay:.22s">
@@ -1090,7 +1124,7 @@ function renderCompat(A,B,c){
     <div class="compat-msg reveal" style="animation-delay:.32s">${c.msg}</div>
 
     <div class="reveal" style="animation-delay:.4s; margin-top:24px">
-      <h3 class="sec-t">세부 궁합 점수</h3>
+      <h3 class="sec-t">${c.friend?'세부 우정 점수':'세부 궁합 점수'}</h3>
       <div class="scores">
         ${c.subScores.map(s=>`<div class="score-item">
           <div class="sl"><div class="l">${s.label}</div><div class="n">${s.score}점</div></div>
@@ -1102,12 +1136,12 @@ function renderCompat(A,B,c){
       <h3 class="sec-t">두 사람의 케미</h3>
       <div class="chem-box">${c.chem}</div>
       <div class="love-styles">
-        <div class="ls-row"><div class="ls-n">${A.name}</div><div class="ls-v">${c.aLove}</div></div>
-        <div class="ls-row"><div class="ls-n">${B.name}</div><div class="ls-v">${c.bLove}</div></div>
+        <div class="ls-row"><div class="ls-n">${A.name}</div><div class="ls-v">${c.styleA}</div></div>
+        <div class="ls-row"><div class="ls-n">${B.name}</div><div class="ls-v">${c.styleB}</div></div>
       </div>
     </div>
 
-    <div class="baby-box reveal" style="animation-delay:.56s">
+    ${c.baby ? `<div class="baby-box reveal" style="animation-delay:.56s">
       <div class="bb-title">👶 두 사람이 결혼해서 아이를 낳는다면</div>
       <span class="bb-emo">${c.baby.emo}</span>
       <div class="bb-nick">「${c.baby.nick}」 같은 아이</div>
@@ -1133,7 +1167,7 @@ function renderCompat(A,B,c){
         </div>
       </div>
       <div class="taemyung">추천 태명 · ${c.baby.taemyung} 🐣</div>
-    </div>
+    </div>` : ''}
 
     <div class="reveal" style="animation-delay:.62s; margin-top:24px">
       <h3 class="sec-t">잘 맞는 점 · 조심할 점</h3>
@@ -1149,12 +1183,12 @@ function renderCompat(A,B,c){
         ${c.detail.map(d=>`<div class="cd-row"><div class="cdt">${d.t}</div><div class="cdv">${d.v}</div></div>`).join('')}
       </div>
       <div class="date-advice">
-        <div class="cd-row"><div class="cdt">💖 추천 데이트</div><div class="cdv">${c.datePlace}</div></div>
+        <div class="cd-row"><div class="cdt">${c.friend?'🤝 함께하면 좋은 것':'💖 추천 데이트'}</div><div class="cdv">${c.activity}</div></div>
         <div class="cd-row"><div class="cdt">✨ 두 사람에게</div><div class="cdv">${c.advice}</div></div>
       </div>
     </div>
 
-    <div class="brand" style="margin-top:22px">🌙 오늘의 사주 궁합</div>
+    <div class="brand" style="margin-top:22px">🌙 오늘의 사주 ${c.friend?'우정 궁합':'궁합'}</div>
   </div>
   <div class="actions reveal" style="animation-delay:.5s">
     <button class="btn-save" id="saveBtn">📸 이미지 저장</button>
@@ -1194,14 +1228,26 @@ $('#bGenderSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click
 
 // 모드 탭 (내 사주 / 궁합)
 let mode='solo';
+let relType='love';
+function updateGoBtn(){
+  if(mode!=='love'){ $('#goBtn').textContent='내 사주 보기 ✦'; return; }
+  $('#goBtn').textContent = relType==='friend' ? '친구 궁합 보기 👯' : '연인 궁합 보기 💞';
+}
 $('#modeTabs').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
   $('#modeTabs').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
   b.classList.add('on'); mode=b.dataset.mode;
   const love=mode==='love';
   $('#personB').style.display=love?'block':'none';
   $('#nameLabel').textContent=love?'내 이름':'이름';
-  $('#goBtn').textContent=love?'궁합 보기 💞':'내 사주 보기 ✦';
+  updateGoBtn();
   $('#err').textContent='';
+}));
+// 연인 / 친구 선택
+$('#relTypeSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  $('#relTypeSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); relType=b.dataset.v;
+  $('#pbTitle') && ($('#pbTitle').textContent = relType==='friend'?'👯 친구 정보':'💞 상대방 정보');
+  updateGoBtn();
 }));
 
 function validPerson(name,y,m,d,err){
@@ -1249,8 +1295,11 @@ $('#goBtn').addEventListener('click',()=>{
     if(!validPerson(bname,by,bm,bd,err)) return;
     const bsaju=calcSaju(by,bm,bd,bhour);
     const B={name:bname,gender:state.bGender,cal:'양',y:by,m:bm,d:bd,saju:bsaju,hourBranch:bhour};
-    const compat=calcCompat(A,B);
-    showLoading(['두 사람의 사주를 맞춰보는 중…','오행의 어울림을 살피는 중…','띠의 합과 충을 보는 중…','인연의 깊이를 재는 중…'],()=>{
+    const compat=calcCompat(A,B,relType);
+    const loadMsgs = relType==='friend'
+      ? ['두 사람의 사주를 맞춰보는 중…','우정의 케미를 살피는 중…','띠의 합과 충을 보는 중…','인연의 깊이를 재는 중…']
+      : ['두 사람의 사주를 맞춰보는 중…','오행의 어울림을 살피는 중…','띠의 합과 충을 보는 중…','인연의 깊이를 재는 중…'];
+    showLoading(loadMsgs,()=>{
       const r=$('#result'); r.innerHTML=renderCompat(A,B,compat); r.classList.add('show');
       window.scrollTo({top:0,behavior:'instant'});
       setTimeout(()=>{
