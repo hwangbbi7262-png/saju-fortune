@@ -215,6 +215,15 @@
   .pm-unlocked .pm-lock-overlay,.pm-unlocked .pm-cta,.pm-unlocked .pm-note{display:none;}
   .pm-fore{margin-top:16px;}
   .pm-fore .pm-omen{padding:14px 16px; border-radius:12px; background:rgba(91,140,255,.12); border:1px solid rgba(91,140,255,.3); font-size:13.5px; line-height:1.7; color:#e7e0fa; margin-bottom:10px;}
+  .pm-sec-t{font-family:'Gowun Batang',serif; font-size:15px; color:var(--gold2); margin:20px 0 11px; font-weight:700;}
+  .pm-months{display:flex; flex-direction:column; gap:9px; margin-bottom:4px;}
+  .pm-mrow{display:flex; gap:12px; align-items:flex-start; padding:12px 14px; border-radius:11px; background:rgba(255,255,255,.05);}
+  .pm-mrow .pm-m{color:var(--gold2); font-weight:700; min-width:58px; font-size:13px;}
+  .pm-mrow .pm-mt{font-size:13px; line-height:1.55; color:#e7e0fa;}
+  .pm-flows{display:flex; flex-direction:column; gap:10px;}
+  .pm-flow{padding:14px 16px; border-radius:12px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09);}
+  .pm-flow .pm-fh{font-size:14px; font-weight:700; color:var(--gold2); margin-bottom:5px;}
+  .pm-flow .pm-ft{font-size:13px; line-height:1.7; color:#ddd5f5;}
 
   /* 궁합 */
   .compat-top{display:flex; align-items:center; justify-content:center; gap:6px; margin:18px 0;}
@@ -287,6 +296,8 @@
   .zm-row .zm-t{font-size:11px; color:var(--muted); margin-bottom:3px; letter-spacing:1px;}
   .zm-row .zm-v{font-size:15px; font-weight:700;}
   .zm-row .zm-v small{font-weight:400; font-size:12px; color:#cfc6ec; margin-left:6px;}
+  .zm-row .zm-yr{font-weight:400; font-size:11px; color:var(--gold); margin-left:7px;}
+  .zm-row .zm-desc{font-size:12.5px; color:#cfc6ec; margin-top:4px; line-height:1.5;}
 
   .actions{display:flex; gap:10px; margin-top:22px;}
   .actions button{flex:1; padding:15px; border-radius:14px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; border:1px solid rgba(255,255,255,.14); transition:.18s;}
@@ -535,21 +546,46 @@ const ILGAN = {
 /* 오행별 정보: 색/방향/숫자/계절/장소 */
 const EL_INFO = {
   목:{color:'#3fb27f',cname:'초록·연두',dir:'동쪽',num:'3, 8',season:'봄',
-      place:['숲이 우거진 공원','식물원·수목원','초록이 가득한 카페'],
+      colors:{yang:[['선명한 초록','#34c759'],['싱그러운 라임','#8fd14f'],['청록빛 민트','#3fd0a0']],
+              yin:[['짙은 청록','#1f7a5a'],['차분한 올리브','#5e7a2e'],['깊은 포레스트 그린','#246b4a']]},
+      place:['숲이 우거진 공원','식물원·수목원','초록이 가득한 카페','나무 많은 산책로','대나무 숲길','한적한 정원','꽃이 만개한 화원'],
       lack:'결단이 흐려질 땐 초록을 곁에 두면 추진력이 살아나요.'},
   화:{color:'#e76f6f',cname:'빨강·분홍',dir:'남쪽',num:'2, 7',season:'여름',
-      place:['햇살 좋은 루프탑','활기찬 축제·핫플','전망 좋은 남향 명소'],
+      colors:{yang:[['선명한 다홍','#ff5a36'],['밝은 코랄','#ff6f61'],['생기 도는 빨강','#e8362f']],
+              yin:[['깊은 버건디','#9e2a3a'],['고혹적인 자주','#b03a6a'],['진한 와인','#7a2233']]},
+      place:['햇살 좋은 루프탑','활기찬 축제·핫플','전망 좋은 남향 명소','조명 예쁜 라운지','불멍·캠프파이어 명소','화려한 야경 스폿','따뜻한 벽난로 카페'],
       lack:'기운이 처질 땐 붉은 포인트로 열정과 자신감을 채우세요.'},
-  토:{color:'#e0b04a','cname':'노랑·베이지·황토',dir:'중앙',num:'5, 10',season:'환절기',
-      place:['고즈넉한 한옥·고궁','흙길 있는 둘레길','아늑한 황토빛 공간'],
+  토:{color:'#e0b04a',cname:'노랑·베이지·황토',dir:'중앙',num:'5, 10',season:'환절기',
+      colors:{yang:[['밝은 황금빛','#e0b04a'],['따뜻한 머스타드','#d4a017'],['화사한 베이지','#e3cfa0']],
+              yin:[['그윽한 황토색','#b8895a'],['차분한 카멜','#a9743f'],['진한 베이지','#c2a878']]},
+      place:['고즈넉한 한옥·고궁','흙길 있는 둘레길','아늑한 황토빛 공간','도자기·공예 공방','산 중턱 전망대','너른 들판·평야','정겨운 전통시장'],
       lack:'마음이 들뜰 땐 황토·베이지 톤이 중심을 잡아줘요.'},
   금:{color:'#dfe3ea',cname:'흰색·은색',dir:'서쪽',num:'4, 9',season:'가을',
-      place:['미술관·갤러리','세련된 도심 라운지','바위·금속이 있는 명소'],
+      colors:{yang:[['순백의 화이트','#f3f3f7'],['은은한 펄 화이트','#e6e9f2'],['밝은 실버','#d9dde4']],
+              yin:[['세련된 실버 그레이','#aeb4c0'],['묵직한 메탈 그레이','#8d94a3'],['차분한 스틸 그레이','#9aa0ad']]},
+      place:['미술관·갤러리','세련된 도심 라운지','바위·금속이 있는 명소','보석·주얼리 거리','클래식 공연장','모던한 건축물','미니멀 화이트 카페'],
       lack:'판단이 무뎌질 땐 화이트·실버로 예리함을 되찾으세요.'},
   수:{color:'#5b8cff',cname:'파랑·검정',dir:'북쪽',num:'1, 6',season:'겨울',
-      place:['바다·강·호숫가','아쿠아리움','물소리 들리는 카페'],
+      colors:{yang:[['선명한 코발트','#2b6fff'],['시원한 스카이 블루','#3a9fd8'],['청록빛 블루','#2f9fae']],
+              yin:[['깊은 네이비','#20306a'],['차분한 먹빛 블랙','#1a1a24'],['묵직한 블루블랙','#1a1f33']]},
+      place:['바다·강·호숫가','아쿠아리움','물소리 들리는 카페','온천·스파','분수 있는 공원','비 오는 날 창가','해변 산책로'],
       lack:'생각이 막힐 땐 파란빛과 물가에서 지혜가 트여요.'}
 };
+/* 이달의 처방 문구 풀 — {el}{color}{dir}{maxEl}{ilgan} 치환 */
+const MONTH_COLOR_DESC=[
+  '사주에 부족한 <b>{el}</b> 기운을 채워주는 색이에요. 옷·소품·배경화면에 <b>{color}</b>을 더하면 막힌 흐름이 트입니다.',
+  '<b>{maxEl}</b> 기운이 강한 당신에게 <b>{el}</b>을 보태는 <b>{color}</b>이 균형을 잡아줘요. 이달엔 이 색을 가까이 두세요.',
+  '{ilgan} 일간인 당신에게 이달 가장 필요한 건 <b>{el}</b>의 기운. <b>{color}</b> 계열 소지품이 운을 끌어올려 줍니다.',
+  '<b>{color}</b>은 당신에게 모자란 <b>{el}</b>을 보강하는 색이에요. 지갑·폰케이스처럼 자주 보는 곳에 두면 좋아요.',
+  '이달의 당신을 살리는 색은 <b>{color}</b>. 부족한 <b>{el}</b>을 채워 마음의 중심을 잡아줍니다.'
+];
+const MONTH_PLACE_DESC=[
+  '<b>{dir}</b> 방향, <b>{el}</b>의 기운이 흐르는 곳이에요. 이달 안에 한 번 다녀오면 막힌 운이 풀립니다.',
+  '부족한 <b>{el}</b>을 채우기 좋은 장소예요. <b>{dir}</b>으로 떠나는 짧은 나들이가 기분과 운을 함께 바꿔줘요.',
+  '당신에게 모자란 <b>{el}</b>의 기운이 가득한 곳. 이번 달 <b>{dir}</b> 방향으로 발걸음 해보세요.',
+  '마음이 답답할 때 <b>{el}</b>의 기운이 흐르는 이곳을 찾으면 한결 풀려요. 방향은 <b>{dir}</b>.',
+  '<b>{maxEl}</b>에 치우친 기운을 <b>{el}</b>로 식혀주는 장소예요. <b>{dir}</b> 쪽으로 다녀오면 균형이 잡힙니다.'
+];
 
 /* 일간별 타고난 직업·적성 */
 const CAREER={
@@ -666,40 +702,91 @@ function makeFamous(saju,seedTxt){
 /* ============================================================
    프리미엄(990원) 심층 리포트 생성
    ============================================================ */
-const PM_MONTH_HI=['크게 웃을 일이 생기는 달. 미뤘던 일을 시작하기 좋습니다.','귀인이 손을 내미는 시기. 인연을 적극적으로 잡으세요.','노력의 결실이 보이는 달. 결과가 따라옵니다.','재물의 문이 열립니다. 기회를 놓치지 마세요.'];
-const PM_MONTH_MID=['차분히 정리하기 좋은 달. 욕심보다 내실을.','무난한 흐름 속 작은 기회가 숨어 있어요.','관계에 신경 쓰면 더 좋아지는 시기.','기초를 다지면 다음 도약이 커집니다.'];
-const PM_MONTH_LO=['잠시 숨 고르는 달. 무리한 결정은 미루기.','지출을 조심하고 건강을 챙기세요.','부딪힘이 있을 수 있으니 한 발 물러서기.','쉬어가는 게 오히려 운을 키우는 시기.'];
+const PM_MONTH_HI=['크게 웃을 일이 생기는 달. 미뤘던 일을 시작하기 좋습니다.','귀인이 손을 내미는 시기. 인연을 적극적으로 잡으세요.','노력의 결실이 보이는 달. 결과가 따라옵니다.','재물의 문이 열립니다. 기회를 놓치지 마세요.','자신감이 빛을 발하는 달. 도전이 좋은 결과로 이어져요.','오래 기다린 소식이 들려오는 시기예요.','인덕이 따르는 달. 사람을 통해 길이 열립니다.'];
+const PM_MONTH_MID=['차분히 정리하기 좋은 달. 욕심보다 내실을.','무난한 흐름 속 작은 기회가 숨어 있어요.','관계에 신경 쓰면 더 좋아지는 시기.','기초를 다지면 다음 도약이 커집니다.','평범함 속 안정을 누리기 좋은 달.','한 가지에 집중하면 성과가 보이는 시기.','마무리에 신경 쓰면 평이 좋아집니다.'];
+const PM_MONTH_LO=['잠시 숨 고르는 달. 무리한 결정은 미루기.','지출을 조심하고 건강을 챙기세요.','부딪힘이 있을 수 있으니 한 발 물러서기.','쉬어가는 게 오히려 운을 키우는 시기.','말과 약속을 조심하면 탈이 없어요.','컨디션 관리가 곧 운 관리인 달.','새 일보다 안으로 다지는 한 달로.'];
 const PM_OMEN=[
   '{m}월 둘째 주, 한동안 연락 없던 옛 인연에게서 소식이 옵니다.',
   '{m}월 말, 예상치 못한 곳에서 금전적 행운이 들어옵니다.',
   '{m}월 초, 중요한 선택의 갈림길에 섭니다 — 직감을 믿으세요.',
   '{m}월 셋째 주, 귀인을 만나 일이 한결 수월해집니다.',
-  '{m}월, 새로운 시작에 좋은 바람이 붑니다. 망설이지 마세요.'
+  '{m}월, 새로운 시작에 좋은 바람이 붑니다. 망설이지 마세요.',
+  '{m}월, 건강이나 컨디션에 한 번 신호가 오니 미리 챙기세요.',
+  '{m}월 무렵, 그동안 쌓은 노력이 인정받는 일이 생깁니다.',
+  '{m}월, 가까운 사람과의 작은 오해가 전화위복이 됩니다.'
 ];
-function makePremium(saju,total운,seedTxt){
-  const r=mulberry32(hashStr(seedTxt+'premium'));
+const PM_FLOW={
+  애정:{icon:'💖',hi:['하반기 애정운이 활짝 열려요. 솔로라면 새 인연, 커플이라면 한층 깊어지는 시기. 솔직한 표현이 복을 부릅니다.','설레는 만남의 기운이 강해요. 망설이던 마음을 한 발 내디디면 좋은 결실로 이어집니다.'],mid:['큰 풍파 없는 잔잔한 애정운이에요. 익숙함 속 작은 이벤트가 관계에 생기를 더합니다.','관계에 들이는 정성만큼 돌아오는 시기. 표현을 아끼지 마세요.'],lo:['감정이 예민해지기 쉬운 흐름이에요. 다투기보다 한 박자 쉬어가면 인연이 지켜집니다.','지금은 나를 먼저 돌보는 시기. 무리한 관계는 잠시 거리를 둬도 좋아요.']},
+  금전:{icon:'💰',hi:['재물의 문이 열리는 하반기예요. 노력한 만큼, 때로는 그 이상으로 보상이 따릅니다.','뜻밖의 수입이나 좋은 정보가 들어와요. 기회를 알아보는 눈만 있으면 됩니다.'],mid:['들고 나는 게 균형을 이루는 무난한 금전운. 계획 안에서 움직이면 손해는 없어요.','큰 욕심보다 새는 돈을 막는 데서 이득이 생기는 시기예요.'],lo:['지출이 늘기 쉬운 흐름이에요. 큰 결제와 보증·투자는 신중히 하세요.','돈 약속은 미루는 게 상책. 하반기 후반부터 흐름이 풀립니다.']},
+  직업:{icon:'💼',hi:['능력을 인정받는 하반기예요. 적극적으로 나서면 좋은 기회가 손을 잡아줍니다.','새 기회의 문이 열려요. 제안이 온다면 긍정적으로 검토할 만합니다.'],mid:['묵묵히 실력을 쌓으면 평가가 따라오는 시기. 디테일에 신경 쓰세요.','큰 변화보다 마무리에 집중할 때. 끝맺음이 곧 신뢰가 됩니다.'],lo:['사람과의 마찰이 일을 더디게 할 수 있어요. 한 발 양보가 입지를 지킵니다.','중요한 결정·서명은 한 번 더 검토하세요. 실수만 줄이면 무난합니다.']},
+  건강:{icon:'🌿',hi:['몸도 마음도 활력이 도는 하반기예요. 이 기운으로 미뤄둔 운동을 시작하기 좋아요.','컨디션이 좋아 무엇을 해도 가뿐한 시기. 다만 과로만 조심하세요.'],mid:['큰 무리 없는 건강 흐름. 규칙적인 생활만 지키면 평온합니다.','작은 피로가 쌓이기 전에 틈틈이 풀어주면 좋아요.'],lo:['몸보다 마음이 먼저 지치기 쉬운 흐름. 충분한 휴식이 보약입니다.','미뤄둔 증상은 그냥 넘기지 마세요. 지금 챙기면 큰 탈 없이 지나갑니다.']}
+};
+const PM_ADVICE={
+  hi:['올 하반기는 당신에게 도약의 시기입니다. 벌여둔 일을 마무리하고 새 기회를 적극적으로 잡으세요. 다만 자신감이 과해 주변을 놓치지 않도록 주의하면 큰 결실을 맺습니다.','상승의 바람을 탄 하반기예요. 미뤄둔 도전을 지금 시작하면 연말에 웃습니다. 단, 혼자 다 하려 말고 곁의 사람과 함께 가세요.'],
+  mid:['하반기는 다지고 준비하는 시기입니다. 서두르기보다 내실을 채우면 연말로 갈수록 흐름이 트입니다. 사람을 잃지 않는 것이 가장 큰 재산이 되는 시기예요.','큰 욕심보다 한 걸음씩 쌓는 하반기. 기본에 충실하면 조용히 운이 차오릅니다. 관계에 들이는 정성이 복으로 돌아와요.'],
+  lo:['하반기 초반은 숨 고르기, 후반은 반등입니다. 지금의 멈춤은 더 멀리 가기 위한 준비이니 조급해 마세요. 건강과 마음을 먼저 돌보면 운이 따라옵니다.','잠시 흐림 뒤 맑음이 오는 하반기예요. 무리한 확장보다 나를 추스르는 데 집중하면, 연말로 갈수록 길이 열립니다.']
+};
+/* 고민 상담 — 카테고리별 사주 맞춤 답변 풀 */
+const WORRY={
+  연애:{label:'연애·결혼',icon:'💕',kws:['연애','사랑','남자','여자','남친','여친','썸','이별','헤어','결혼','짝사랑','솔로','연인','애인','재회','고백','이성','데이트'],
+    advice:['지금은 마음을 솔직히 내보일수록 운이 트이는 시기예요. 재고 따지기보다 진심을 먼저 표현해보세요. 상대도 당신의 진심에 마음이 움직입니다.','인연은 이미 가까이 와 있어요. 익숙한 관계 속 설렘이 옅어졌다면, 작은 변화와 표현이 다시 불을 지핍니다.','조급함이 오히려 인연을 밀어내는 때예요. 한 박자 여유를 두고 나를 가꾸면, 좋은 사람이 자연스럽게 다가옵니다.'],
+    action:['이번 주 안에 마음에 둔 사람에게 먼저 안부를 건네보세요.','내 매력을 살리는 분위기에 한 번 투자해보세요.','과거 인연의 미련은 정리하고 새 만남에 마음을 열어두세요.']},
+  금전:{label:'금전·재물',icon:'💸',kws:['돈','금전','재물','투자','빚','대출','월급','저축','부자','수입','지출','주식','코인','재테크','파산','매출'],
+    advice:['큰돈이 한 번에 들어오기보다 새는 돈을 막는 데서 운이 열리는 시기예요. 지출 구조를 점검하면 생각보다 큰 여유가 생깁니다.','귀가 얇아지기 쉬운 때라, 솔깃한 제안일수록 한 박자 멈추세요. 확실한 정보와 내 판단을 믿을 때 재물운이 따릅니다.','노력한 만큼 보상이 따라오는 흐름이에요. 미뤄둔 정산·계약이 있다면 지금 매듭짓는 게 이득입니다.'],
+    action:['한 달 고정지출을 쭉 점검해보세요. 새는 돈이 보입니다.','큰 결제는 하루 미뤘다가 결정하는 습관을 들이세요.','받을 돈·미뤄둔 정산이 있다면 이번 주에 챙기세요.']},
+  직업:{label:'직업·진로',icon:'🧭',kws:['직업','일','진로','이직','취업','회사','퇴사','승진','사업','창업','커리어','면접','직장','업무','전직','시험','합격'],
+    advice:['지금은 자리를 옮기기보다 실력을 다지는 시기예요. 묵묵히 쌓은 전문성이 곧 큰 기회로 돌아옵니다.','능력을 인정받을 흐름이 다가와요. 좋은 제안이 온다면 두려워 말고 긍정적으로 검토할 만합니다.','사람과의 마찰이 일의 발목을 잡을 수 있어요. 한 발 양보하는 여유가 오히려 입지를 단단하게 만듭니다.'],
+    action:['내 강점을 한 줄로 정리해 어필할 기회를 준비해두세요.','배우고 싶던 분야를 이번 달에 시작해보세요.','부딪히는 동료가 있다면 먼저 가볍게 대화를 청해보세요.']},
+  관계:{label:'인간관계',icon:'🤝',kws:['친구','관계','인간관계','사람','가족','부모','형제','동료','갈등','오해','외로','소외','왕따','배신','뒷담'],
+    advice:['모두에게 좋은 사람일 필요는 없는 때예요. 나를 지치게 하는 관계는 거리를 두고, 진짜 내 편에 마음을 쏟으세요.','오해는 대화로 쉽게 풀리는 흐름이에요. 먼저 손 내미는 쪽이 관계의 주도권을 쥡니다.','베푼 만큼 돌아오지 않아 서운할 수 있어요. 기대를 조금 내려놓으면 마음이 한결 가벼워집니다.'],
+    action:['에너지를 뺏는 관계 하나를 이번 달엔 살짝 멀리해보세요.','소중한 사람에게 먼저 따뜻한 연락을 건네보세요.','담아둔 말이 있다면 부드럽게 표현해보세요.']},
+  건강:{label:'건강·마음',icon:'🍵',kws:['건강','몸','아프','병','피곤','스트레스','우울','불안','잠','수면','체력','멘탈','마음','정신','번아웃'],
+    advice:['몸보다 마음이 먼저 지쳐 있는 때예요. 충분한 휴식과 잠이 어떤 보약보다 당신을 회복시켜 줍니다.','미뤄둔 작은 증상을 그냥 넘기지 마세요. 지금 챙기면 큰 탈 없이 지나갑니다.','긴장이 몸에 쌓이기 쉬운 흐름이에요. 가벼운 운동과 바깥 공기가 기운을 시원하게 풀어줍니다.'],
+    action:['이번 주는 평소보다 30분 일찍 잠자리에 들어보세요.','하루 10분이라도 가볍게 걷는 시간을 만들어보세요.','미뤄둔 건강검진·진료를 이번 달에 예약하세요.']},
+  선택:{label:'중요한 선택',icon:'⚖️',kws:['선택','결정','고민','어떻게','해야','할까','망설','갈림길','두갈래','포기','도전'],
+    advice:['머리로 따질수록 답이 흐려지는 때예요. 두 길 앞에서 마음이 더 끌리는 쪽, 그 직감이 당신의 사주가 가리키는 방향입니다.','지금의 선택은 늦지 않았어요. 남의 시선이 아니라 내가 진짜 원하는 것을 기준으로 삼으세요.','완벽한 선택은 없어요. 어느 쪽을 택하든 책임지고 밀어붙이는 힘이, 그 선택을 정답으로 만듭니다.'],
+    action:['두 선택지의 장단점을 종이에 직접 적어보세요. 마음이 보입니다.','믿을 만한 어른 한 명에게 의견을 구해보세요.','결정 기한을 정하고, 그날이 오면 미루지 말고 택하세요.']}
+};
+const PM_WORRY_TIMING=['특히 {m}월 들어 흐름이 눈에 띄게 바뀌니, 그때 움직이면 좋아요.','{m}월 무렵 기회의 문이 열려요. 그 시기를 놓치지 마세요.','{m}월까지는 준비에 집중하고, 그 이후 본격적으로 움직이세요.','이번 달과 다음 달이 분기점이에요. {m}월의 선택이 흐름을 가릅니다.'];
+
+function makePremium(ctx){
+  const {total운,name,ilganNick,kw,minEl,maxEl}=ctx;
+  const r=mulberry32(hashStr(ctx.seedTxt+'premium'));
   const today=new Date(); const cur=today.getMonth()+1;
   const months=[];
   for(let i=0;i<6;i++){
-    let mm=cur+i; let yr=today.getFullYear(); if(mm>12){mm-=12; yr++;}
-    const roll=r(); const pool=roll>0.62?PM_MONTH_HI:roll>0.3?PM_MONTH_MID:PM_MONTH_LO;
-    const sc=roll>0.62?(78+Math.floor(r()*18)):roll>0.3?(55+Math.floor(r()*20)):(38+Math.floor(r()*16));
-    months.push({label:`${mm}월`, txt:pool[Math.floor(r()*pool.length)], sc});
+    let mm=cur+i; if(mm>12)mm-=12;
+    const roll=r(); const tierKey=roll>0.62?'hi':roll>0.3?'mid':'lo';
+    const pool=tierKey==='hi'?PM_MONTH_HI:tierKey==='mid'?PM_MONTH_MID:PM_MONTH_LO;
+    const sc=tierKey==='hi'?(78+Math.floor(r()*18)):tierKey==='mid'?(55+Math.floor(r()*20)):(38+Math.floor(r()*16));
+    const emoji=tierKey==='hi'?'🌟':tierKey==='mid'?'🌤️':'🌥️';
+    months.push({label:`${mm}월`, txt:pool[Math.floor(r()*pool.length)], sc, emoji});
   }
-  // 시기 예언 2개
-  const omens=[];
-  const used=new Set();
-  for(let k=0;k<2;k++){
+  // 분야별 하반기 흐름
+  const flows=Object.entries(PM_FLOW).map(([k,v])=>{
+    const roll=r(); const t=roll>0.6?'hi':roll>0.3?'mid':'lo';
+    return {title:k, icon:v.icon, txt:v[t][Math.floor(r()*v[t].length)]};
+  });
+  // 시기 예언 3개
+  const omens=[]; const used=new Set();
+  for(let k=0;k<3;k++){
     let idx; do{ idx=Math.floor(r()*PM_OMEN.length);}while(used.has(idx)&&used.size<PM_OMEN.length); used.add(idx);
     const tm=cur+Math.floor(r()*5); const mm=tm>12?tm-12:tm;
     omens.push(PM_OMEN[idx].replace('{m}',mm));
   }
-  const advice = total운>=70
-    ? '올 하반기는 당신에게 도약의 시기입니다. 벌여둔 일을 마무리하고 새 기회를 적극적으로 잡으세요. 다만 자신감이 과해 주변을 놓치지 않도록 주의하면 큰 결실을 맺습니다.'
-    : total운>=45
-    ? '하반기는 다지고 준비하는 시기입니다. 서두르기보다 내실을 채우면 연말로 갈수록 흐름이 트입니다. 사람을 잃지 않는 것이 가장 큰 재산이 되는 시기예요.'
-    : '하반기 초반은 숨 고르기, 후반은 반등입니다. 지금의 멈춤은 더 멀리 가기 위한 준비이니 조급해 마세요. 건강과 마음을 먼저 돌보면 운이 따라옵니다.';
-  return {months,omens,advice};
+  const advice = pick(r, total운>=70?PM_ADVICE.hi : total운>=45?PM_ADVICE.mid : PM_ADVICE.lo);
+  // 고민 상담 답변 (카테고리별 사주 맞춤)
+  const diag = fixJosa(`‘${ilganNick}’의 기운을 타고난 ${name} 님은 ${kw[0]}·${kw[1]}한 성향이 강해요. 지금 사주 흐름상 부족한 <b>${minEl}</b> 기운만 보완하면, 이 고민은 충분히 풀어낼 수 있습니다.`);
+  const worry={};
+  for(const [k,v] of Object.entries(WORRY)){
+    const wr=mulberry32(hashStr(ctx.seedTxt+'worry'+k));
+    const tm=cur+1+Math.floor(wr()*4); const mm=tm>12?tm-12:tm;
+    worry[k]={label:v.label, icon:v.icon, diag,
+      advice:v.advice[Math.floor(wr()*v.advice.length)],
+      action:v.action[Math.floor(wr()*v.action.length)],
+      timing:PM_WORRY_TIMING[Math.floor(wr()*PM_WORRY_TIMING.length)].replace('{m}',mm)};
+  }
+  return {months,flows,omens,advice,worry};
 }
 
 /* ============================================================
@@ -709,6 +796,7 @@ const YUKHAP=[[0,1],[2,11],[3,10],[4,9],[5,8],[6,7]];
 const SAMHAP=[[8,0,4],[2,6,10],[5,9,1],[11,3,7]];
 const CHUNG=[[0,6],[1,7],[2,8],[3,9],[4,10],[5,11]];
 function pairIn(list,a,b){ return list.some(g=>g.includes(a)&&g.includes(b)); }
+function zodiacYears(branch){ const out=[]; for(let y=2025;y>=1948&&out.length<4;y--){ if(((y-4)%12+12)%12===branch) out.push(y); } return out.join('·')+'년생'; }
 function zodiacMatch(branch){
   let yuk=null;
   for(const [a,b] of YUKHAP){ if(a===branch)yuk=b; else if(b===branch)yuk=a; }
@@ -748,6 +836,16 @@ const BABY_NAMES={
   수:{boy:[['시윤','맑게 흐르는 빛'],['연우','잔잔하고 어진'],['하율','깊고 조화로운'],['지호','슬기롭고 넓은']],
       girl:[['수빈','맑고 빛나는'],['윤슬','물에 반짝이는 햇살'],['지아','슬기롭고 맑은'],['예서','지혜롭고 상서로운']]}
 };
+function hasJong(s){ if(!s) return false; const c=s.charCodeAt(s.length-1); return c>=0xAC00&&c<=0xD7A3 && (c-0xAC00)%28!==0; }
+function pEulReul(w){ return hasJong(w)?'을':'를'; }
+// 받침에 맞춰 조사(을/를·은/는·이/가)를 자동 교정 (<b>태그 사이도 처리)
+function fixJosa(s){
+  return s.replace(/([가-힣])(<\/b>)?(을|를|은|는|이|가)/g,(m,ch,b,p)=>{
+    const j=(ch.charCodeAt(0)-0xAC00)%28!==0;
+    const map={'을':['을','를'],'를':['을','를'],'은':['은','는'],'는':['은','는'],'이':['이','가'],'가':['이','가']};
+    return ch+(b||'')+map[p][j?0:1];
+  });
+}
 function pick2(r,arr){ if(arr.length<=2) return arr.slice(); const i=Math.floor(r()*arr.length); let j; do{ j=Math.floor(r()*arr.length); }while(j===i); return [arr[i],arr[j]]; }
 function pickN(r,arr,n){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a.slice(0,Math.min(n,a.length)); }
 
@@ -992,11 +1090,18 @@ function render(data){
   const luckyItem=pick(rng,ITEMS);
   const luckyNum = li.num.split(',')[Math.floor(rng()*2)].trim();
 
-  // 이달 (월 씨앗) — 이달의 색/장소
-  const mseed=hashStr(name+y+m+d+'month'+today.getFullYear()+(today.getMonth()+1));
-  const mrng=mulberry32(mseed);
-  const monthPlace=pick(mrng,li.place);
+  // 이달 (월 씨앗) — 이달의 색/장소 (일간 음양 + 사주 반영, 매월 변화)
   const monthName=today.getMonth()+1;
+  const mseed=hashStr(name+y+m+d+(hourBranch??'x')+'month'+today.getFullYear()+monthName);
+  const mrng=mulberry32(mseed);
+  const isYang = dStem%2===0; // 양일간(甲丙戊庚壬) / 음일간
+  const colorSet = isYang ? li.colors.yang : li.colors.yin;
+  const monthColor = pick(mrng, colorSet);   // [이름, hex]
+  const monthPlace = pick(mrng, li.place);
+  const ilganLabel = `${HS[dStem]}${HS_KR[dStem]}(${isYang?'양':'음'})`;
+  function fillTok(t){ return t.replace(/{el}/g,luckyEl).replace(/{color}/g,monthColor[0]).replace(/{dir}/g,li.dir).replace(/{maxEl}/g,maxEl[0]).replace(/{ilgan}/g,ilganLabel); }
+  const monthColorDesc = fixJosa(fillTok(pick(mrng,MONTH_COLOR_DESC)));
+  const monthPlaceDesc = fixJosa(fillTok(pick(mrng,MONTH_PLACE_DESC)));
 
   // 한 줄 메시지
   const ONELINE={hi:['오늘의 당신에게는 분명 좋은 일이 일어납니다. 그 기운을 믿으세요.',
@@ -1017,7 +1122,7 @@ function render(data){
   const nick = makeNick(saju, idSeed);
   const past = makePast(dayEl, ig.kw.join('·'), idSeed);
   const famous = makeFamous(saju, idSeed);
-  const premium = makePremium(saju, total운, idSeed);
+  const premium = makePremium({total운, name, ilganNick:ig.nick, kw:ig.kw, minEl:minEl[0], maxEl:maxEl[0], seedTxt:idSeed});
 
   const sajuTime = saju.hasHour ? '' : '<div class="hint" style="text-align:center;margin-top:10px">※ 태어난 시간을 모르면 시주를 뺀 3주(년·월·일)로 풀이했어요.</div>';
 
@@ -1092,7 +1197,7 @@ function render(data){
       <div class="desc" style="font-size:13px;color:#ddd5f5;line-height:1.75;margin-top:14px">
         당신의 사주는 <b class="el-${maxEl[0]}">${maxEl[0]}</b>의 기운이 가장 강하고,
         <b class="el-${minEl[0]}">${minEl[0]}</b>의 기운이 부족합니다.
-        부족한 <b class="el-${luckyEl}">${luckyEl}</b>을 채우는 것이 올해의 운을 끌어올리는 열쇠예요.
+        부족한 <b class="el-${luckyEl}">${luckyEl}</b>${pEulReul(luckyEl)} 채우는 것이 올해의 운을 끌어올리는 열쇠예요.
         ${li.lack}
       </div>
     </div>
@@ -1114,14 +1219,14 @@ function render(data){
       <div class="mt">✦ ${monthName}월, 당신을 위한 처방 ✦</div>
       <div class="month-grid">
         <div class="mrow">
-          <div class="ic"><span class="swatch" style="background:${li.color};width:30px;height:30px"></span></div>
-          <div class="mc"><h4>이달의 색 · ${li.cname}</h4>
-          <p>부족한 <b class="el-${luckyEl}">${luckyEl}</b> 기운을 채워주는 색이에요. 옷·소품·배경화면에 이 색을 더하면 흐름이 트입니다.</p></div>
+          <div class="ic"><span class="swatch" style="background:${monthColor[1]};width:30px;height:30px"></span></div>
+          <div class="mc"><h4>이달의 색 · ${monthColor[0]}</h4>
+          <p>${monthColorDesc}</p></div>
         </div>
         <div class="mrow">
           <div class="ic">📍</div>
           <div class="mc"><h4>이달의 장소 · ${monthPlace}</h4>
-          <p>${li.dir} 방향, ${luckyEl}의 기운이 흐르는 곳이에요. 이달 안에 한 번 다녀오면 막힌 운이 풀립니다.</p></div>
+          <p>${monthPlaceDesc}</p></div>
         </div>
       </div>
     </div>
@@ -1136,9 +1241,9 @@ function render(data){
     <div class="reveal" style="animation-delay:.56s; margin-top:24px">
       <h3 class="sec-t">나와 띠 궁합</h3>
       <div class="zmatch">
-        <div class="zm-row best"><div class="zm-emo">${ZODIAC_EMO[zm.yuk]}</div><div><div class="zm-t">💚 천생 짝꿍 (육합)</div><div class="zm-v">${ZODIAC[zm.yuk]}띠<small>찰떡같이 통하는 최고의 인연</small></div></div></div>
-        <div class="zm-row good"><div class="zm-emo">${ZODIAC_EMO[zm.sam[0]]}${ZODIAC_EMO[zm.sam[1]]}</div><div><div class="zm-t">💙 잘 맞는 띠 (삼합)</div><div class="zm-v">${ZODIAC[zm.sam[0]]}띠 · ${ZODIAC[zm.sam[1]]}띠<small>함께하면 일이 잘 풀려요</small></div></div></div>
-        <div class="zm-row warn"><div class="zm-emo">${ZODIAC_EMO[zm.chung]}</div><div><div class="zm-t">⚠️ 조심할 띠 (상충)</div><div class="zm-v">${ZODIAC[zm.chung]}띠<small>부딪히기 쉬워 노력이 필요</small></div></div></div>
+        <div class="zm-row best"><div class="zm-emo">${ZODIAC_EMO[zm.yuk]}</div><div><div class="zm-t">💚 천생 짝꿍 (육합)</div><div class="zm-v">${ZODIAC[zm.yuk]}띠<span class="zm-yr">${zodiacYears(zm.yuk)}</span></div><div class="zm-desc">찰떡같이 통하는 최고의 인연</div></div></div>
+        <div class="zm-row good"><div class="zm-emo">${ZODIAC_EMO[zm.sam[0]]}${ZODIAC_EMO[zm.sam[1]]}</div><div><div class="zm-t">💙 잘 맞는 띠 (삼합)</div><div class="zm-v">${ZODIAC[zm.sam[0]]}띠 · ${ZODIAC[zm.sam[1]]}띠</div><div class="zm-desc">${ZODIAC[zm.sam[0]]}띠 ${zodiacYears(zm.sam[0])} · ${ZODIAC[zm.sam[1]]}띠 ${zodiacYears(zm.sam[1])}<br/>함께하면 일이 잘 풀려요</div></div></div>
+        <div class="zm-row warn"><div class="zm-emo">${ZODIAC_EMO[zm.chung]}</div><div><div class="zm-t">⚠️ 조심할 띠 (상충)</div><div class="zm-v">${ZODIAC[zm.chung]}띠<span class="zm-yr">${zodiacYears(zm.chung)}</span></div><div class="zm-desc">부딪히기 쉬워 노력이 필요</div></div></div>
       </div>
     </div>
 
@@ -1175,15 +1280,25 @@ function render(data){
       </div>
       <div class="pm-lock-overlay">
         <div class="lock">🔒</div>
-        <div class="lt">잠긴 풀이 6개 · 결정적 시기 예언 2개</div>
+        <div class="lt">월별 운세 6개 · 분야별 흐름 4개 · 시기 예언 3개</div>
       </div>
     </div>
     <div class="pm-fore" style="display:none" id="pmFore">
+      <div class="pm-sec-t">📅 월별 운세 흐름</div>
+      <div class="pm-months">
+        ${premium.months.map(mo=>`<div class="pm-mrow"><span class="pm-m">${mo.emoji} ${mo.label}</span><span class="pm-mt">${mo.txt}</span></div>`).join('')}
+      </div>
+      <div class="pm-sec-t">🌗 분야별 하반기 흐름</div>
+      <div class="pm-flows">
+        ${premium.flows.map(f=>`<div class="pm-flow"><div class="pm-fh">${f.icon} ${f.title}운</div><div class="pm-ft">${f.txt}</div></div>`).join('')}
+      </div>
+      <div class="pm-sec-t">🔮 다가올 결정적 시기</div>
       ${premium.omens.map(o=>`<div class="pm-omen">🔮 ${o}</div>`).join('')}
-      <div class="cd-row"><div class="cdt">하반기 종합 조언</div><div class="cdv">${premium.advice}</div></div>
+      <div class="pm-sec-t">✨ 하반기 종합 조언</div>
+      <div class="cd-row"><div class="cdv">${premium.advice}</div></div>
     </div>
     <button class="pm-cta" id="pmUnlock">💳 990원으로 전체 풀이 보기</button>
-    <div class="pm-note">결제 후 6개월 운세 흐름 · 시기 예언 · 종합 조언이 모두 열립니다</div>
+    <div class="pm-note">결제 후 월별 운세 · 분야별 흐름 · 시기 예언 · 종합 조언이 모두 열립니다</div>
   </div>
 
   <div class="actions reveal" style="animation-delay:.7s">
