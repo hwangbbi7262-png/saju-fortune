@@ -272,6 +272,22 @@
   .bn-name .nn{font-family:'Gowun Batang',serif; font-size:16px; font-weight:700; color:#fff;}
   .bn-name .nm{font-size:11px; color:#cfc6ec; margin-top:3px; line-height:1.45;}
 
+  /* 직업·적성 */
+  .career-apt{font-family:'Gowun Batang',serif; font-size:17px; color:var(--gold2); text-align:center; margin:2px 0 14px; line-height:1.5;}
+  .job-chips{display:flex; flex-wrap:wrap; gap:9px; justify-content:center;}
+  .job-chips span{font-size:13.5px; font-weight:500; padding:10px 16px; border-radius:999px; background:rgba(233,196,106,.1); border:1px solid rgba(233,196,106,.28); color:#f0e8fb;}
+  .career-note{margin-top:16px; font-size:13px; line-height:1.85; color:#ddd5f5; text-align:center;}
+  /* 띠 궁합 */
+  .zmatch{display:flex; flex-direction:column; gap:11px;}
+  .zm-row{display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.1);}
+  .zm-row.best{background:rgba(63,178,127,.12); border-color:rgba(63,178,127,.35);}
+  .zm-row.good{background:rgba(91,140,255,.1); border-color:rgba(91,140,255,.3);}
+  .zm-row.warn{background:rgba(231,111,111,.1); border-color:rgba(231,111,111,.32);}
+  .zm-row .zm-emo{font-size:30px; flex-shrink:0;}
+  .zm-row .zm-t{font-size:11px; color:var(--muted); margin-bottom:3px; letter-spacing:1px;}
+  .zm-row .zm-v{font-size:15px; font-weight:700;}
+  .zm-row .zm-v small{font-weight:400; font-size:12px; color:#cfc6ec; margin-left:6px;}
+
   .actions{display:flex; gap:10px; margin-top:22px;}
   .actions button{flex:1; padding:15px; border-radius:14px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; border:1px solid rgba(255,255,255,.14); transition:.18s;}
   .btn-save{background:linear-gradient(135deg,#f4d58d,#e9c46a); color:#231431; border:none;}
@@ -535,6 +551,20 @@ const EL_INFO = {
       lack:'생각이 막힐 땐 파란빛과 물가에서 지혜가 트여요.'}
 };
 
+/* 일간별 타고난 직업·적성 */
+const CAREER={
+  0:{apt:'앞에서 이끄는 타고난 리더',jobs:['경영자·CEO','정치·공직','건축가','교육자','기획자','감독·코치'],strength:'추진력과 결단력, 큰 그림을 그리는 통솔력',luck:'위로 올라갈수록 빛나요. 내 사업·리더 자리에서 대성합니다.'},
+  1:{apt:'사람과 사람을 잇는 조율가',jobs:['디자이너','상담·코칭','서비스 기획','플로리스트','MD·바이어','작가'],strength:'유연한 친화력과 섬세한 감각, 끈기',luck:'사람을 다루는 일에서 진가가 나와요. 인맥이 곧 재산입니다.'},
+  2:{apt:'무대 위에서 빛나는 표현가',jobs:['방송·연예','마케터','영업·세일즈','강사','인플루언서','홍보·PR'],strength:'밝은 에너지와 표현력, 사람을 끌어당기는 매력',luck:'드러나는 일일수록 운이 터져요. 이름을 알리는 직업이 천직.'},
+  3:{apt:'한 분야를 깊이 파는 전문가',jobs:['연구원','의료·바이오','엔지니어','교사','작가','셰프'],strength:'집중력과 헌신, 끝까지 파고드는 완성도',luck:'전문성이 쌓일수록 대체 불가가 돼요. 한 우물이 정답입니다.'},
+  4:{apt:'중심을 잡는 든든한 관리자',jobs:['공직·행정','부동산','경영관리','금융','건설','중개·중재'],strength:'흔들리지 않는 신뢰와 포용, 안정감',luck:'오래 버틸수록 쌓이는 타입. 부동산·고정자산에 복이 있어요.'},
+  5:{apt:'실속을 챙기는 살림형 실무가',jobs:['회계·세무','교육','요식업','총무·기획','자영업','영양·보건'],strength:'현실 감각과 꼼꼼함, 알뜰한 관리력',luck:'손에 잡히는 실무에서 인정받아요. 내 가게·실속 창업에 강점.'},
+  6:{apt:'결단으로 승부하는 행동가',jobs:['군·경·소방','운동선수','외과·응급의','법조인','영업','금융 트레이더'],strength:'과감한 결단과 의리, 위기에 강한 멘탈',luck:'승부의 세계에서 빛나요. 결단이 빠를수록 기회를 잡습니다.'},
+  7:{apt:'감각과 디테일의 완벽주의자',jobs:['디자이너','뷰티·패션','주얼리·공예','전문의','평론가','브랜딩'],strength:'남다른 미적 감각과 정교함, 높은 기준',luck:'가치를 알아주는 곳에서 폭발해요. 안목이 곧 몸값입니다.'},
+  8:{apt:'넓은 무대를 누비는 전략가',jobs:['무역·해외','IT·기획','여행·항공','컨설턴트','크리에이터','창업가'],strength:'빠른 두뇌와 큰 스케일, 자유로운 발상',luck:'무대가 넓을수록 운이 커져요. 해외·온라인에 기회가 많아요.'},
+  9:{apt:'통찰로 읽어내는 두뇌형',jobs:['기획자','작가·창작','연구·학계','심리·상담','데이터 분석','예술가'],strength:'영민한 통찰과 풍부한 감수성, 아이디어',luck:'머리와 감각을 쓰는 일이 천직. 정보·콘텐츠가 돈이 됩니다.'}
+};
+
 const STAR = [
   [1,20,'물병자리','♒'],[2,19,'물고기자리','♓'],[3,21,'양자리','♈'],[4,20,'황소자리','♉'],
   [5,21,'쌍둥이자리','♊'],[6,22,'게자리','♋'],[7,23,'사자자리','♌'],[8,23,'처녀자리','♍'],
@@ -661,6 +691,15 @@ const YUKHAP=[[0,1],[2,11],[3,10],[4,9],[5,8],[6,7]];
 const SAMHAP=[[8,0,4],[2,6,10],[5,9,1],[11,3,7]];
 const CHUNG=[[0,6],[1,7],[2,8],[3,9],[4,10],[5,11]];
 function pairIn(list,a,b){ return list.some(g=>g.includes(a)&&g.includes(b)); }
+function zodiacMatch(branch){
+  let yuk=null;
+  for(const [a,b] of YUKHAP){ if(a===branch)yuk=b; else if(b===branch)yuk=a; }
+  let sam=[];
+  for(const g of SAMHAP){ if(g.includes(branch)) sam=g.filter(x=>x!==branch); }
+  let chung=null;
+  for(const [a,b] of CHUNG){ if(a===branch)chung=b; else if(b===branch)chung=a; }
+  return {yuk,sam,chung};
+}
 function elRel(a,b){
   const gen={목:'화',화:'토',토:'금',금:'수',수:'목'};
   const ctrl={목:'토',화:'금',토:'수',금:'목',수:'화'};
@@ -934,6 +973,8 @@ function render(data){
 
   // 새 재미 요소 (사주로 고정되는 정체성)
   const idSeed = name+y+m+d+(hourBranch??'x');
+  const career = CAREER[dStem];
+  const zm = zodiacMatch(saju.yBranch);
   const nick = makeNick(saju, idSeed);
   const past = makePast(saju, dayEl, idSeed);
   const famous = makeFamous(saju, idSeed);
@@ -1043,6 +1084,22 @@ function render(data){
           <div class="mc"><h4>이달의 장소 · ${monthPlace}</h4>
           <p>${li.dir} 방향, ${luckyEl}의 기운이 흐르는 곳이에요. 이달 안에 한 번 다녀오면 막힌 운이 풀립니다.</p></div>
         </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="animation-delay:.52s; margin-top:24px">
+      <h3 class="sec-t">타고난 직업 · 적성</h3>
+      <div class="career-apt">“${career.apt}”</div>
+      <div class="job-chips">${career.jobs.map(j=>`<span>${j}</span>`).join('')}</div>
+      <div class="career-note">💪 <b>강점</b> · ${career.strength}<br/>🍀 <b>직업운</b> · ${career.luck}</div>
+    </div>
+
+    <div class="reveal" style="animation-delay:.56s; margin-top:24px">
+      <h3 class="sec-t">나와 띠 궁합</h3>
+      <div class="zmatch">
+        <div class="zm-row best"><div class="zm-emo">${ZODIAC_EMO[zm.yuk]}</div><div><div class="zm-t">💚 천생 짝꿍 (육합)</div><div class="zm-v">${ZODIAC[zm.yuk]}띠<small>찰떡같이 통하는 최고의 인연</small></div></div></div>
+        <div class="zm-row good"><div class="zm-emo">${ZODIAC_EMO[zm.sam[0]]}${ZODIAC_EMO[zm.sam[1]]}</div><div><div class="zm-t">💙 잘 맞는 띠 (삼합)</div><div class="zm-v">${ZODIAC[zm.sam[0]]}띠 · ${ZODIAC[zm.sam[1]]}띠<small>함께하면 일이 잘 풀려요</small></div></div></div>
+        <div class="zm-row warn"><div class="zm-emo">${ZODIAC_EMO[zm.chung]}</div><div><div class="zm-t">⚠️ 조심할 띠 (상충)</div><div class="zm-v">${ZODIAC[zm.chung]}띠<small>부딪히기 쉬워 노력이 필요</small></div></div></div>
       </div>
     </div>
 
