@@ -169,7 +169,7 @@
 
   /* 모드 탭 */
   .tabs{display:flex; gap:8px; background:rgba(255,255,255,.05); padding:6px; border-radius:14px; margin-bottom:18px;}
-  .tabs button{flex:1; padding:13px; border:none; border-radius:10px; background:transparent; color:var(--muted); font-family:'Gowun Batang',serif; font-size:15px; font-weight:700; cursor:pointer; transition:.18s;}
+  .tabs button{flex:1; padding:12px 6px; border:none; border-radius:10px; background:transparent; color:var(--muted); font-family:'Gowun Batang',serif; font-size:14.5px; font-weight:700; cursor:pointer; transition:.18s; white-space:nowrap;}
   .tabs button.on{background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#231431;}
   .personB{margin-top:20px; padding-top:18px; border-top:1px dashed rgba(233,196,106,.25);}
   .personB .pb-title{font-family:'Gowun Batang',serif; font-size:15px; color:var(--gold2); margin-bottom:4px;}
@@ -307,6 +307,31 @@
   .toast{position:fixed; left:50%; bottom:32px; transform:translateX(-50%) translateY(20px); background:#2a1758; color:#fff; padding:13px 22px; border-radius:999px; font-size:14px; opacity:0; pointer-events:none; transition:.3s; z-index:99; border:1px solid var(--line); box-shadow:0 10px 30px rgba(0,0,0,.4);}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
   .err{color:#ff9d9d; font-size:13px; margin-top:12px; text-align:center; min-height:18px;}
+
+  /* 타로 */
+  .tarot-q{text-align:center; font-size:14px; color:#ddd5f5; margin:4px 0 18px; line-height:1.6;}
+  .tarot-q b{color:var(--gold2);}
+  .tcards{display:flex; gap:9px; justify-content:center; margin:6px 0 8px;}
+  .tcard{flex:1; max-width:120px; border-radius:14px; padding:14px 6px 12px; text-align:center; position:relative;
+    background:linear-gradient(165deg,#241452,#140a2c); border:1.5px solid var(--line);
+    box-shadow:0 10px 26px rgba(0,0,0,.45), inset 0 0 22px rgba(233,196,106,.08);
+    opacity:0; transform:translateY(14px) scale(.96); animation:tflip .5s ease forwards;}
+  .tcard:nth-child(1){animation-delay:.1s} .tcard:nth-child(2){animation-delay:.3s} .tcard:nth-child(3){animation-delay:.5s}
+  @keyframes tflip{to{opacity:1; transform:none}}
+  .tcard .tpos{font-size:11px; color:var(--gold); letter-spacing:1px; margin-bottom:8px;}
+  .tcard .tsym{font-size:42px; line-height:1; margin:4px 0 8px; display:inline-block;}
+  .tcard.rev .tsym{transform:rotate(180deg);}
+  .tcard .tname{font-family:'Gowun Batang',serif; font-size:14px; font-weight:700; line-height:1.25;}
+  .tcard .torient{margin-top:7px; font-size:10.5px; padding:3px 8px; border-radius:999px; display:inline-block;}
+  .tcard .torient.up{background:rgba(63,178,127,.18); color:#7fe0b0;}
+  .tcard .torient.dn{background:rgba(231,111,111,.18); color:#ffb0b0;}
+  .tinterp{padding:14px 16px; border-radius:13px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09); margin-bottom:10px;}
+  .tinterp .ti-h{font-size:13.5px; font-weight:700; color:var(--gold2); margin-bottom:5px;}
+  .tinterp .ti-t{font-size:13.5px; line-height:1.7; color:#e7e0fa;}
+  .tarot-sum{margin-top:8px; padding:20px 18px; border-radius:16px; background:linear-gradient(135deg,rgba(124,77,255,.16),rgba(233,196,106,.1)); border:1px solid rgba(233,196,106,.25); text-align:center;}
+  .tarot-sum .ts-l{font-size:12px; color:var(--gold); letter-spacing:2px; margin-bottom:9px;}
+  .tarot-sum .ts-t{font-family:'Gowun Batang',serif; font-size:16px; line-height:1.8; color:#fff;}
+  .tarot-sum .ts-a{margin-top:13px; font-size:13px; color:#ddd5f5; padding-top:12px; border-top:1px dashed var(--line);}
 </style>
 </head>
 <body>
@@ -324,49 +349,58 @@
 
     <div class="card">
       <div class="tabs" id="modeTabs">
-        <button data-mode="solo" class="on">🔮 내 사주</button>
-        <button data-mode="love">💞 궁합 보기</button>
+        <button data-mode="solo" class="on">📜 내 사주</button>
+        <button data-mode="love">💞 궁합</button>
+        <button data-mode="tarot">🔮 타로</button>
       </div>
 
       <label id="nameLabel">이름</label>
       <input id="name" type="text" placeholder="이름을 입력하세요" maxlength="12" autocomplete="off" />
 
-      <label>성별</label>
-      <div class="seg" id="genderSeg">
-        <button data-v="남">남자</button>
-        <button data-v="여">여자</button>
+      <div id="sajuFields">
+        <label>성별</label>
+        <div class="seg" id="genderSeg">
+          <button data-v="남">남자</button>
+          <button data-v="여">여자</button>
+        </div>
+
+        <label>양력 / 음력</label>
+        <div class="seg" id="calSeg">
+          <button data-v="양" class="on">양력</button>
+          <button data-v="음">음력</button>
+        </div>
+
+        <label>생년월일</label>
+        <div class="row">
+          <div><input id="year" type="number" placeholder="연도" inputmode="numeric" /></div>
+          <div><input id="month" type="number" placeholder="월" inputmode="numeric" min="1" max="12" /></div>
+          <div><input id="day" type="number" placeholder="일" inputmode="numeric" min="1" max="31" /></div>
+        </div>
+
+        <label>태어난 시간 <span style="color:#8b7fb0;font-weight:400">(모르면 건너뛰기)</span></label>
+        <select id="hour">
+          <option value="">시간을 모름</option>
+          <option value="0">자시 (23:30~01:30) 🐀</option>
+          <option value="2">축시 (01:30~03:30) 🐂</option>
+          <option value="4">인시 (03:30~05:30) 🐯</option>
+          <option value="6">묘시 (05:30~07:30) 🐇</option>
+          <option value="8">진시 (07:30~09:30) 🐉</option>
+          <option value="10">사시 (09:30~11:30) 🐍</option>
+          <option value="12">오시 (11:30~13:30) 🐎</option>
+          <option value="14">미시 (13:30~15:30) 🐑</option>
+          <option value="16">신시 (15:30~17:30) 🐒</option>
+          <option value="18">유시 (17:30~19:30) 🐓</option>
+          <option value="20">술시 (19:30~21:30) 🐕</option>
+          <option value="22">해시 (21:30~23:30) 🐖</option>
+        </select>
+        <div class="hint" id="calHint">※ 사주는 양력 기준으로 계산됩니다. 음력 생일은 양력으로 변환 후 입력하면 더 정확해요.</div>
       </div>
 
-      <label>양력 / 음력</label>
-      <div class="seg" id="calSeg">
-        <button data-v="양" class="on">양력</button>
-        <button data-v="음">음력</button>
+      <div id="tarotFields" style="display:none">
+        <label>마음속 질문 <span style="color:#8b7fb0;font-weight:400">(고민·궁금한 것)</span></label>
+        <input id="tarotQ" type="text" placeholder="예) 그 사람과 잘 될까요? / 이직해도 될까요?" maxlength="60" autocomplete="off" />
+        <div class="hint">질문을 떠올리며 카드를 뽑으세요. 같은 질문은 오늘 하루 같은 카드가 나와요.</div>
       </div>
-
-      <label>생년월일</label>
-      <div class="row">
-        <div><input id="year" type="number" placeholder="연도" inputmode="numeric" /></div>
-        <div><input id="month" type="number" placeholder="월" inputmode="numeric" min="1" max="12" /></div>
-        <div><input id="day" type="number" placeholder="일" inputmode="numeric" min="1" max="31" /></div>
-      </div>
-
-      <label>태어난 시간 <span style="color:#8b7fb0;font-weight:400">(모르면 건너뛰기)</span></label>
-      <select id="hour">
-        <option value="">시간을 모름</option>
-        <option value="0">자시 (23:30~01:30) 🐀</option>
-        <option value="2">축시 (01:30~03:30) 🐂</option>
-        <option value="4">인시 (03:30~05:30) 🐯</option>
-        <option value="6">묘시 (05:30~07:30) 🐇</option>
-        <option value="8">진시 (07:30~09:30) 🐉</option>
-        <option value="10">사시 (09:30~11:30) 🐍</option>
-        <option value="12">오시 (11:30~13:30) 🐎</option>
-        <option value="14">미시 (13:30~15:30) 🐑</option>
-        <option value="16">신시 (15:30~17:30) 🐒</option>
-        <option value="18">유시 (17:30~19:30) 🐓</option>
-        <option value="20">술시 (19:30~21:30) 🐕</option>
-        <option value="22">해시 (21:30~23:30) 🐖</option>
-      </select>
-      <div class="hint" id="calHint">※ 사주는 양력 기준으로 계산됩니다. 음력 생일은 양력으로 변환 후 입력하면 더 정확해요.</div>
 
       <div class="personB" id="personB" style="display:none">
         <div class="seg" id="relTypeSeg" style="margin-bottom:16px">
@@ -1311,6 +1345,89 @@ function render(data){
 }
 function timeLabel(hb){ const idx=Math.floor(((hb+1)%24)/2)%12; return EB_KR[idx]+'시'; }
 
+/* ============================================================
+   타로 (메이저 아르카나 22) — 3장 스프레드
+   ============================================================ */
+const TAROT=[
+  {n:'바보',e:'🃏',p:1,up:'새로운 시작과 모험. 두려움 없이 첫발을 내딛기 좋은 때예요.',dn:'무모함과 망설임. 준비 없이 뛰어들면 발을 헛디딜 수 있어요.'},
+  {n:'마법사',e:'🎩',p:1,up:'가진 재능으로 원하는 걸 이룰 힘이 있어요. 지금이 실행할 때.',dn:'재능을 허투루 쓰거나 자신을 의심하는 때. 집중이 필요해요.'},
+  {n:'여사제',e:'🌙',p:0,up:'직감과 내면의 목소리에 귀 기울일 때. 답은 이미 안에 있어요.',dn:'마음의 소리를 외면하고 있어요. 숨겨진 진실을 살펴보세요.'},
+  {n:'여황제',e:'👑',p:1,up:'풍요와 사랑, 결실의 기운. 돌보고 가꾼 것이 꽃을 피웁니다.',dn:'정체되거나 베풂이 지나친 때. 나를 먼저 돌보세요.'},
+  {n:'황제',e:'🏛️',p:1,up:'안정과 주도권. 질서를 세우고 책임질 때 성과가 따라와요.',dn:'고집과 통제욕을 내려놓을 때. 유연함이 필요해요.'},
+  {n:'교황',e:'📜',p:0,up:'전통과 가르침, 조언자의 도움. 정도를 따르면 길이 열려요.',dn:'틀에 갇히거나 형식에 얽매인 때. 나만의 길도 괜찮아요.'},
+  {n:'연인',e:'💞',p:1,up:'사랑과 조화, 중요한 선택. 마음이 이끄는 쪽이 정답이에요.',dn:'관계의 갈등이나 잘못된 선택. 진심을 다시 확인하세요.'},
+  {n:'전차',e:'🏇',p:1,up:'의지와 추진력으로 승리하는 때. 밀어붙이면 돌파합니다.',dn:'방향을 잃거나 조급한 때. 속도보다 방향을 점검하세요.'},
+  {n:'힘',e:'🦁',p:1,up:'부드러운 용기와 인내. 마음의 힘으로 어려움을 다스려요.',dn:'자신감이 흔들리는 때. 스스로를 다그치지 마세요.'},
+  {n:'은둔자',e:'🏮',p:0,up:'홀로 돌아보며 답을 찾는 때. 고요 속에서 길이 보여요.',dn:'고립되거나 회피하는 때. 마음을 열 용기가 필요해요.'},
+  {n:'운명의 수레바퀴',e:'🎡',p:1,up:'운명의 전환점. 좋은 변화의 바람이 불어옵니다.',dn:'예상 밖의 흐름. 통제할 수 없는 건 흘려보내세요.'},
+  {n:'정의',e:'⚖️',p:0,up:'균형과 공정한 결과. 뿌린 대로 거두는 때예요.',dn:'불공정이나 미뤄둔 책임. 솔직함이 균형을 되찾아줘요.'},
+  {n:'매달린 사람',e:'🙃',p:0,up:'잠시 멈춰 다르게 보는 때. 내려놓으면 답이 보여요.',dn:'정체와 희생의 피로. 무의미한 기다림은 멈추세요.'},
+  {n:'죽음',e:'🦋',p:0,up:'끝과 새로운 시작. 한 챕터를 보내야 다음이 열려요.',dn:'변화를 거부하는 때. 놓아주지 못해 힘든 거예요.'},
+  {n:'절제',e:'🕊️',p:1,up:'조화와 균형, 중용. 서두르지 않으면 모든 게 맞춰져요.',dn:'균형이 깨진 때. 과하거나 모자란 곳을 살펴보세요.'},
+  {n:'악마',e:'😈',p:-1,up:'집착과 유혹, 굴레. 무엇이 나를 묶고 있는지 직시할 때.',dn:'굴레에서 벗어나는 때. 해방의 실마리가 보여요.'},
+  {n:'탑',e:'🗼',p:-1,up:'갑작스러운 변화와 충격. 무너진 자리에 새 길이 생겨요.',dn:'위기를 가까스로 피하는 때. 미뤄둔 문제를 살피세요.'},
+  {n:'별',e:'⭐',p:1,up:'희망과 치유. 어두운 터널 끝에 빛이 보이기 시작해요.',dn:'실망이나 자신감 저하. 다시 희망을 품을 때예요.'},
+  {n:'달',e:'🌝',p:0,up:'불안과 혼란, 숨은 진실. 직감을 믿되 신중하세요.',dn:'안개가 걷히는 때. 오해와 두려움이 풀려갑니다.'},
+  {n:'태양',e:'☀️',p:1,up:'성공과 기쁨, 활력. 모든 것이 환하게 빛나는 최고의 때!',dn:'잠시 흐려진 기쁨. 곧 다시 밝아지니 조급해 마세요.'},
+  {n:'심판',e:'🎺',p:0,up:'각성과 부활, 새 기회. 지난 것을 정리하고 다시 일어설 때.',dn:'후회나 망설임. 자신을 용서하고 앞으로 나아가세요.'},
+  {n:'세계',e:'🌍',p:1,up:'완성과 성취, 통합. 한 여정의 멋진 마무리와 보상이 와요.',dn:'마무리가 더딘 때. 마지막 한 걸음을 마저 내디디세요.'}
+];
+const TAROT_SUM={
+  hi:['세 장의 카드가 입을 모아 좋은 흐름을 가리켜요. 지금의 선택과 노력이 분명한 결실로 이어집니다. 자신을 믿고 나아가세요.','카드들이 밝은 빛을 비추고 있어요. 망설였던 일이 있다면, 지금이 바로 움직일 때입니다.'],
+  mid:['카드는 변화의 길목에 선 당신을 보여줘요. 서두르기보다 흐름을 읽으면, 답은 자연스럽게 드러납니다.','좋고 나쁨이 섞인 흐름이에요. 마음의 중심만 잘 잡으면 충분히 원하는 방향으로 갈 수 있어요.'],
+  lo:['카드가 잠시 멈춰 돌아보라 말하고 있어요. 지금의 어려움은 더 나은 다음을 위한 과정입니다. 조급해 마세요.','다소 무거운 카드가 나왔지만, 끝은 곧 새로운 시작이에요. 내려놓을 것을 내려놓으면 길이 열립니다.']
+};
+const TAROT_ADVICE=['마음이 이끄는 직감을 한 번 믿어보세요.','오늘의 작은 선택이 내일의 큰 흐름을 만듭니다.','답을 밖에서 찾기보다 안에서 들어보세요.','지나간 것에 머물지 말고 지금에 집중하세요.','두려움보다 호기심으로 한 발 내디뎌 보세요.'];
+
+function drawTarot(seedTxt){
+  const r=mulberry32(hashStr(seedTxt+'tarot'));
+  const idxs=[]; while(idxs.length<3){ const i=Math.floor(r()*TAROT.length); if(!idxs.includes(i)) idxs.push(i); }
+  const pos=['과거','현재','미래'];
+  const draws=idxs.map((i,k)=>({card:TAROT[i], up:r()<0.62, pos:pos[k]}));
+  let tone=0; draws.forEach(d=>{ tone += d.up? d.card.p : -d.card.p; });
+  const tier = tone>=2?'hi' : tone<=-1?'lo' : 'mid';
+  const sum=pick(r,TAROT_SUM[tier]);
+  const advice=pick(r,TAROT_ADVICE);
+  return {draws, sum, advice};
+}
+function renderTarot(name, question, t){
+  const posLabel={과거:'🕰️ 과거',현재:'✨ 현재',미래:'🔮 미래'};
+  const cardsHtml=t.draws.map(d=>`
+    <div class="tcard ${d.up?'':'rev'}">
+      <div class="tpos">${d.pos}</div>
+      <div class="tsym">${d.card.e}</div>
+      <div class="tname">${d.card.n}</div>
+      <div class="torient ${d.up?'up':'dn'}">${d.up?'정방향':'역방향'}</div>
+    </div>`).join('');
+  const interpHtml=t.draws.map(d=>`
+    <div class="tinterp">
+      <div class="ti-h">${posLabel[d.pos]} · ${d.card.n} ${d.up?'(정)':'(역)'}</div>
+      <div class="ti-t">${d.up?d.card.up:d.card.dn}</div>
+    </div>`).join('');
+  return `
+  <div class="rcard" id="capture">
+    <div class="rhead reveal" style="animation-delay:.05s">
+      <div class="who">✦ ${name?name+' 님의 ':''}타로 리딩 ✦</div>
+      <h2>🔮 3장의 운명 카드</h2>
+    </div>
+    ${question?`<div class="tarot-q reveal" style="animation-delay:.1s">“<b>${question}</b>”</div>`:''}
+    <div class="tcards">${cardsHtml}</div>
+    <div class="reveal" style="animation-delay:.62s; margin-top:14px">${interpHtml}</div>
+    <div class="tarot-sum reveal" style="animation-delay:.7s">
+      <div class="ts-l">✦ 카드가 전하는 메시지 ✦</div>
+      <div class="ts-t">${t.sum}</div>
+      <div class="ts-a">💫 ${t.advice}</div>
+    </div>
+    <div class="brand" style="margin-top:20px">🌙 오늘의 사주 · 타로</div>
+  </div>
+  <div class="actions reveal" style="animation-delay:.8s">
+    <button class="btn-save" id="saveBtn">📸 이미지 저장</button>
+    <button class="btn-share" id="shareBtn">🔗 공유하기</button>
+  </div>
+  <button class="btn-retry" id="retryBtn">다시 뽑기</button>
+  `;
+}
+
 function renderCompat(A,B,c){
   const za=ZCHAR[A.saju.yBranch], zb=ZCHAR[B.saju.yBranch];
   const zoa=ZODIAC[A.saju.yBranch], zob=ZODIAC[B.saju.yBranch];
@@ -1441,15 +1558,18 @@ $('#bGenderSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click
 let mode='solo';
 let relType='love';
 function updateGoBtn(){
+  if(mode==='tarot'){ $('#goBtn').textContent='타로 카드 뽑기 🔮'; return; }
   if(mode!=='love'){ $('#goBtn').textContent='내 사주 보기 ✦'; return; }
   $('#goBtn').textContent = relType==='friend' ? '친구 궁합 보기 👯' : '연인 궁합 보기 💞';
 }
 $('#modeTabs').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
   $('#modeTabs').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
   b.classList.add('on'); mode=b.dataset.mode;
-  const love=mode==='love';
-  $('#personB').style.display=love?'block':'none';
-  $('#nameLabel').textContent=love?'내 이름':'이름';
+  const love=mode==='love', tarot=mode==='tarot';
+  $('#sajuFields').style.display = tarot?'none':'block';
+  $('#personB').style.display = love?'block':'none';
+  $('#tarotFields').style.display = tarot?'block':'none';
+  $('#nameLabel').textContent = love?'내 이름' : tarot?'이름 (선택)' : '이름';
   updateGoBtn();
   $('#err').textContent='';
 }));
@@ -1478,6 +1598,21 @@ function showLoading(msgs,cb){
 
 $('#goBtn').addEventListener('click',()=>{
   const err=$('#err'); err.textContent='';
+
+  if(mode==='tarot'){
+    const q=$('#tarotQ').value.trim();
+    const nm=$('#name').value.trim();
+    const today=new Date();
+    const dstr=`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+    const t=drawTarot((nm||'나')+'|'+q+'|'+dstr);
+    showLoading(['카드를 섞는 중…','운명의 카드를 펼치는 중…','과거·현재·미래를 읽는 중…'],()=>{
+      const r=$('#result'); r.innerHTML=renderTarot(nm,q,t); r.classList.add('show');
+      window.scrollTo({top:0,behavior:'instant'});
+      bindResult({name:(nm||'타로')+'_타로'});
+    });
+    return;
+  }
+
   const name=$('#name').value.trim();
   const y=parseInt($('#year').value,10), m=parseInt($('#month').value,10), d=parseInt($('#day').value,10);
   const hourBranch = $('#hour').value===''? null : parseInt($('#hour').value,10);
