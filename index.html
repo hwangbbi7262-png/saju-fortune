@@ -310,6 +310,31 @@
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
   .err{color:#ff9d9d; font-size:14.5px; margin-top:12px; text-align:center; min-height:18px;}
 
+  /* 결제 시트 */
+  .pay-overlay{position:fixed; inset:0; background:rgba(5,3,12,.72); display:none; align-items:flex-end; justify-content:center; z-index:200;}
+  .pay-overlay.show{display:flex; animation:payfade .2s ease;}
+  @keyframes payfade{from{opacity:0}to{opacity:1}}
+  .pay-sheet{width:100%; max-width:480px; background:linear-gradient(180deg,#231350,#160c30); border-radius:24px 24px 0 0; border:1px solid var(--line); border-bottom:none; padding:26px 22px 32px; position:relative; animation:payup .32s cubic-bezier(.2,.8,.2,1);}
+  @keyframes payup{from{transform:translateY(100%)}to{transform:none}}
+  .pay-close{position:absolute; top:16px; right:16px; background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer; padding:4px 8px;}
+  .pay-test-badge{display:inline-block; font-size:12px; color:#ffd76a; background:rgba(233,196,106,.12); border:1px solid rgba(233,196,106,.35); padding:6px 13px; border-radius:999px; margin-bottom:16px;}
+  .pay-title{font-family:'Gowun Batang',serif; font-size:19px; color:#fff; font-weight:700;}
+  .pay-price{font-family:'Gowun Batang',serif; font-size:40px; color:var(--gold2); font-weight:700; margin:6px 0 22px;}
+  .pay-mlabel{font-size:12px; color:var(--muted); margin-bottom:10px; letter-spacing:1px;}
+  .pay-methods{display:flex; flex-direction:column; gap:10px; margin-bottom:22px;}
+  .pay-m{padding:16px; border-radius:13px; border:1.5px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:var(--ink); font-family:inherit; font-size:16px; font-weight:600; text-align:left; cursor:pointer; transition:.15s;}
+  .pay-m.on{border-color:var(--gold); background:rgba(233,196,106,.1);}
+  .pay-do{width:100%; padding:18px; border:none; border-radius:14px; cursor:pointer; font-family:'Gowun Batang',serif; font-size:19px; font-weight:700; color:#231431; background:linear-gradient(135deg,#f4d58d,#e9c46a 60%,#cda044); box-shadow:0 10px 26px rgba(233,196,106,.3);}
+  .pay-do:active{transform:translateY(2px);}
+  .pay-secure{text-align:center; font-size:12px; color:#8b7fb0; margin-top:14px;}
+  .pay-proc{text-align:center; padding:40px 0;}
+  .pay-proc .spin{width:56px; height:56px; margin:0 auto 18px; border-radius:50%; border:3px solid rgba(233,196,106,.2); border-top-color:var(--gold); animation:rot 1s linear infinite;}
+  .pay-proc .pmsg{font-family:'Gowun Batang',serif; font-size:17px; color:var(--gold2);}
+  .pay-done{text-align:center; padding:34px 0;}
+  .pay-done .chk{font-size:58px; margin-bottom:12px; animation:payup .4s ease;}
+  .pay-done .dmsg{font-family:'Gowun Batang',serif; font-size:20px; color:#fff; font-weight:700;}
+  .pay-done .dsub{font-size:14px; color:var(--muted); margin-top:7px;}
+
   /* 타로 */
   .tarot-q{text-align:center; font-size:15.5px; color:#ddd5f5; margin:4px 0 18px; line-height:1.6;}
   .tarot-q b{color:var(--gold2);}
@@ -459,6 +484,35 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- 결제 시트 -->
+<div class="pay-overlay" id="payOverlay">
+  <div class="pay-sheet">
+    <button class="pay-close" id="payClose">✕</button>
+    <div id="payBody">
+      <div class="pay-test-badge">🧪 테스트 모드 · 실제 결제 안 됨</div>
+      <div class="pay-title">2026 하반기 정밀 사주 리포트</div>
+      <div class="pay-price">₩990</div>
+      <div class="pay-mlabel">결제 수단</div>
+      <div class="pay-methods" id="payMethods">
+        <button class="pay-m on" data-m="card">💳 신용 / 체크카드</button>
+        <button class="pay-m" data-m="kakao">🟡 카카오페이</button>
+        <button class="pay-m" data-m="toss">🔵 토스페이</button>
+      </div>
+      <button class="pay-do" id="payDo">990원 결제하기</button>
+      <div class="pay-secure">🔒 안전한 결제 · 부정사용 방지 시스템</div>
+    </div>
+    <div class="pay-proc" id="payProc" style="display:none">
+      <div class="spin"></div>
+      <div class="pmsg">결제를 처리하는 중…</div>
+    </div>
+    <div class="pay-done" id="payDone" style="display:none">
+      <div class="chk">✅</div>
+      <div class="dmsg">결제 완료!</div>
+      <div class="dsub">프리미엄 리포트가 열렸어요 ✨</div>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ============================================================
@@ -1642,6 +1696,32 @@ $('#appShareBtn').addEventListener('click',async()=>{
   else { try{ await navigator.clipboard.writeText(url); toast('앱 링크가 복사됐어요!'); }catch(e){ toast('링크 복사 실패 — 주소창을 복사하세요'); } }
 });
 
+/* ===== 결제 시트 (현재 테스트 모드 — 실제 PG는 이 부분만 교체) ===== */
+let payMethod='card';
+function openPay(){ $('#payBody').style.display='block'; $('#payProc').style.display='none'; $('#payDone').style.display='none'; $('#payOverlay').classList.add('show'); }
+function closePay(){ $('#payOverlay').classList.remove('show'); }
+$('#payClose').addEventListener('click',closePay);
+$('#payOverlay').addEventListener('click',e=>{ if(e.target===$('#payOverlay')) closePay(); });
+$('#payMethods').querySelectorAll('.pay-m').forEach(b=>b.addEventListener('click',()=>{
+  $('#payMethods').querySelectorAll('.pay-m').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); payMethod=b.dataset.m;
+}));
+$('#payDo').addEventListener('click',()=>{
+  // === 실제 결제 연동 지점 ===
+  // 나중에 여기서 토스페이먼츠/포트원 결제창을 호출하고,
+  // 서버 함수(/api/verify)로 결제 검증 성공 시 unlockPremium() 호출하도록 교체.
+  $('#payBody').style.display='none'; $('#payProc').style.display='block';
+  setTimeout(()=>{
+    $('#payProc').style.display='none'; $('#payDone').style.display='block';
+    unlockPremium();
+    setTimeout(()=>{ closePay(); toast('프리미엄 풀이가 열렸어요 ✨'); },1400);
+  },1700);
+});
+function unlockPremium(){
+  const box=$('#premiumBox'); if(box){ box.classList.add('pm-unlocked'); }
+  const f=$('#pmFore'); if(f) f.style.display='block';
+}
+
 // 상대방 성별
 $('#bGenderSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
   $('#bGenderSeg').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
@@ -1768,15 +1848,9 @@ function bindResult(data){
     $('#inputView').style.display='block';
     window.scrollTo({top:0,behavior:'instant'});
   });
-  // 프리미엄 990원 잠금 해제 (현재는 데모 — 실제 결제 연동 전)
+  // 프리미엄 990원 — 결제 시트 열기
   const pu=$('#pmUnlock');
-  if(pu) pu.addEventListener('click',()=>{
-    const ok=confirm('990원 결제를 진행할까요?\n\n(지금은 데모 모드입니다 — 실제 결제 연동 전이라 무료로 열려요)');
-    if(!ok) return;
-    $('#premiumBox').classList.add('pm-unlocked');
-    $('#pmFore').style.display='block';
-    toast('프리미엄 풀이가 열렸어요 ✨');
-  });
+  if(pu) pu.addEventListener('click',openPay);
   $('#saveBtn').addEventListener('click',async()=>{
     const node=$('#capture');
     toast('이미지 만드는 중…');
