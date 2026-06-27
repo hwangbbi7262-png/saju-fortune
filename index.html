@@ -76,6 +76,8 @@
   }
   .cta:active{transform:translateY(2px);}
   .cta[disabled]{opacity:.5;}
+  .app-share{width:100%; margin-top:14px; padding:15px; border-radius:14px; cursor:pointer; font-family:inherit; font-size:16px; font-weight:700; color:var(--ink); background:rgba(255,255,255,.07); border:1px solid rgba(233,196,106,.3); transition:.18s;}
+  .app-share:active{transform:translateY(1px);}
 
   /* loading */
   .loading{display:none; text-align:center; padding:70px 0;}
@@ -442,6 +444,7 @@
       <button class="cta" id="goBtn">내 사주 보기 ✦</button>
       <div class="err" id="err"></div>
     </div>
+    <button class="app-share" id="appShareBtn">🔗 친구에게 이 앱 공유하기</button>
     <div class="brand">made with 🌙 · 정통 사주명리 엔진</div>
   </section>
 
@@ -1630,6 +1633,14 @@ function segSetup(sel,key){
 }
 segSetup('#genderSeg','gender'); segSetup('#calSeg','cal');
 $('#calHint').style.display='none';
+
+// 첫 화면 — 앱 링크 공유
+$('#appShareBtn').addEventListener('click',async()=>{
+  const url=shareBase();
+  const txt='사주·궁합·타로 무료로 보기 🔮';
+  if(navigator.share){ try{ await navigator.share({title:'오늘의 사주',text:txt,url}); }catch(e){} }
+  else { try{ await navigator.clipboard.writeText(url); toast('앱 링크가 복사됐어요!'); }catch(e){ toast('링크 복사 실패 — 주소창을 복사하세요'); } }
+});
 
 // 상대방 성별
 $('#bGenderSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
