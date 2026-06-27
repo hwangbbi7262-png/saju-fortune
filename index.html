@@ -25,6 +25,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://js.tosspayments.com/v1/payment"></script>
 <style>
   :root{
     --bg0:#0b0717; --bg1:#190f33; --bg2:#2a1758;
@@ -490,7 +491,7 @@
   <div class="pay-sheet">
     <button class="pay-close" id="payClose">✕</button>
     <div id="payBody">
-      <div class="pay-test-badge">🧪 테스트 모드 · 실제 결제 안 됨</div>
+      <div class="pay-test-badge">🧪 토스페이먼츠 테스트 결제 · 실제 청구 없음</div>
       <div class="pay-title">2026 하반기 정밀 사주 리포트</div>
       <div class="pay-price">₩990</div>
       <div class="pay-mlabel">결제 수단</div>
@@ -1706,17 +1707,35 @@ $('#payMethods').querySelectorAll('.pay-m').forEach(b=>b.addEventListener('click
   $('#payMethods').querySelectorAll('.pay-m').forEach(x=>x.classList.remove('on'));
   b.classList.add('on'); payMethod=b.dataset.m;
 }));
+// 토스페이먼츠 — 테스트 클라이언트 키 (실결제 시 사장님 키로 교체)
+const TOSS_CLIENT_KEY='test_ck_docs_Ovk5rk1EwkEbP0W43n07xlzm';
+const TOSS_METHOD={card:'카드',toss:'토스페이',kakao:'카드'};
 $('#payDo').addEventListener('click',()=>{
-  // === 실제 결제 연동 지점 ===
-  // 나중에 여기서 토스페이먼츠/포트원 결제창을 호출하고,
-  // 서버 함수(/api/verify)로 결제 검증 성공 시 unlockPremium() 호출하도록 교체.
+  // 로컬 파일이나 SDK 미로딩 시 → 데모 처리 (https 배포본에서만 실제 결제창)
+  if(location.protocol==='file:' || typeof TossPayments==='undefined'){ demoPay(); return; }
+  try{
+    const tp=TossPayments(TOSS_CLIENT_KEY);
+    const orderId='saju_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
+    const base=window.__share?buildShareURL(window.__share):shareBase();
+    const sep=base.includes('?')?'&':'?';
+    tp.requestPayment(TOSS_METHOD[payMethod]||'카드',{
+      amount:990,
+      orderId,
+      orderName:'2026 하반기 정밀 사주 리포트',
+      customerName:($('#name') && $('#name').value)||'고객',
+      successUrl:base+sep+'paid=1',
+      failUrl:base+sep+'payfail=1'
+    }).catch(err=>{ if(err && err.code!=='USER_CANCEL') toast('결제를 진행할 수 없어요'); });
+  }catch(e){ demoPay(); }
+});
+function demoPay(){
   $('#payBody').style.display='none'; $('#payProc').style.display='block';
   setTimeout(()=>{
     $('#payProc').style.display='none'; $('#payDone').style.display='block';
     unlockPremium();
-    setTimeout(()=>{ closePay(); toast('프리미엄 풀이가 열렸어요 ✨'); },1400);
+    setTimeout(()=>{ closePay(); toast('프리미엄 풀이가 열렸어요 ✨ (테스트)'); },1400);
   },1700);
-});
+}
 function unlockPremium(){
   const box=$('#premiumBox'); if(box){ box.classList.add('pm-unlocked'); }
   const f=$('#pmFore'); if(f) f.style.display='block';
@@ -1916,6 +1935,16 @@ function autoRunFromURL(){
       mountResult(renderTarot(nm,q,drawTarot((nm||'나')+'|'+q+'|'+dt)),{name:(nm||'타로')+'_타로'});
     }
   }catch(e){ /* 파라미터 오류 시 일반 입력화면 유지 */ }
+
+  // 토스 결제창에서 돌아온 경우
+  if(p.get('paid')==='1' || p.get('paymentKey')){
+    setTimeout(()=>{ try{ unlockPremium(); }catch(e){} toast('결제 완료! 프리미엄이 열렸어요 ✨'); }, 400);
+    // 결제 파라미터를 주소에서 정리 (새로고침 시 중복 토스트 방지)
+    try{ history.replaceState(null,'', buildShareURL(window.__share||{})); }catch(e){}
+  } else if(p.get('payfail')==='1' || p.get('code')){
+    setTimeout(()=>toast('결제가 취소되었어요'), 400);
+    try{ if(window.__share) history.replaceState(null,'', buildShareURL(window.__share)); }catch(e){}
+  }
 }
 autoRunFromURL();
 
