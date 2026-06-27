@@ -576,6 +576,20 @@ const ILGAN = {
      desc:'메마른 땅을 적시는 맑은 빗물의 기운입니다. 영민한 두뇌와 풍부한 감수성을 지녀, 남들이 못 보는 것을 읽어냅니다. 조용하지만 깊은 사람이라, 곁에 둘수록 진가가 드러나는 타입이에요.',
      love:'감성 충만한 깊은 교감형. 마음을 읽어줘요.',money:'정보와 아이디어가 돈이 되는 두뇌형.',career:'기획·연구·창작·상담 등 머리 쓰는 일에 강점.'}
 };
+/* 일간별 별칭 풀 — 사주로 골라 다양하게 (같은 essence) */
+const ILGAN_NICKS={
+  0:['우뚝 솟은 큰 나무','하늘을 향한 거목','숲을 이끄는 아름드리나무','곧게 뻗은 푸른 소나무','뿌리 깊은 느티나무'],
+  1:['바람에 흔들리는 화초','끈질긴 덩굴풀','담장을 타고 오르는 넝쿨','바위 틈에 핀 들꽃','바람을 타는 갈대'],
+  2:['온 세상을 비추는 태양','한낮의 눈부신 태양','만물을 깨우는 햇살','하늘 한가운데 빛나는 태양','온기를 퍼뜨리는 햇볕'],
+  3:['어둠을 밝히는 촛불','은은히 타오르는 등불','밤을 지키는 별빛','따스한 화롯불','홀로 빛나는 등댓불'],
+  4:['든든한 큰 산','우뚝 솟은 태산','만물을 품은 대지','흔들림 없는 바위산','넉넉한 너른 들녘'],
+  5:['곡식을 키우는 옥토','생명을 기르는 텃밭','촉촉한 기름진 논','꽃을 품은 화단','정성껏 일군 밭이랑'],
+  6:['서슬 퍼런 강철','잘 벼려진 무쇠칼','단단한 원석','담금질된 검','묵직한 도끼날'],
+  7:['영롱하게 빛나는 보석','정교하게 세공된 보석','빛을 머금은 다이아몬드','잘 벼린 은장도','맑게 빛나는 수정'],
+  8:['넘실대는 큰 바다','쉼 없이 흐르는 강','드넓은 대양','굽이치는 강물','깊고 푸른 호수'],
+  9:['촉촉한 단비','새벽을 적시는 이슬','메마름을 적시는 단비','맑은 옹달샘','잔잔히 스미는 가랑비']
+};
+function ilganNick(dStem, seedTxt){ const a=ILGAN_NICKS[dStem]; return a[Math.floor(mulberry32(hashStr(seedTxt+'ignick'))()*a.length)]; }
 
 /* 오행별 정보: 색/방향/숫자/계절/장소 */
 const EL_INFO = {
@@ -1000,10 +1014,11 @@ function calcCompat(A,B,relType){
     neutral:['천천히 알아갈수록 깊어지는 은근한 만남이에요','요란하진 않아도 오래 가는 진국 인연이에요','서로의 영역을 지켜주는 어른스러운 사이예요','노력한 만큼 정이 쌓이는 관계예요','잔잔하지만 단단해질 수 있는 인연이에요']
   };
   const relLine=pick(r,REL_LINES[er]);
+  const nickA=ilganNick(A.saju.dStem, A.name+A.y+A.m+A.d), nickB=ilganNick(B.saju.dStem, B.name+B.y+B.m+B.d);
   const openers=[
-    `‘${igA.nick}’ 같은 ${A.name} 님과 ‘${igB.nick}’ 같은 ${B.name} 님,`,
-    `${A.name} 님은 ‘${igA.nick}’, ${B.name} 님은 ‘${igB.nick}’ 같은 사람이에요.`,
-    `‘${igB.nick}’ 같은 ${B.name} 님 곁의 ‘${igA.nick}’ 같은 ${A.name} 님.`
+    `‘${nickA}’ 같은 ${A.name} 님과 ‘${nickB}’ 같은 ${B.name} 님,`,
+    `${A.name} 님은 ‘${nickA}’, ${B.name} 님은 ‘${nickB}’ 같은 사람이에요.`,
+    `‘${nickB}’ 같은 ${B.name} 님 곁의 ‘${nickA}’ 같은 ${A.name} 님.`
   ];
   const chem=`${openers[Math.floor(r()*openers.length)]} ${relLine}`;
   const styleA = friend ? `${A.name} 님은 ${igA.kw.join('·')}의 매력을 지닌 친구예요.` : igA.love;
@@ -1221,12 +1236,13 @@ function render(data){
 
   // 새 재미 요소 (사주로 고정되는 정체성)
   const idSeed = name+y+m+d+(hourBranch??'x');
+  const igNick = ilganNick(dStem, idSeed);
   const career = CAREER[dStem];
   const zm = zodiacMatch(saju.yBranch);
   const nick = makeNick(saju, idSeed);
   const past = makePast(dayEl, ig.kw.join('·'), idSeed);
   const famous = makeFamous(saju, idSeed);
-  const premium = makePremium({total운, name, ilganNick:ig.nick, kw:ig.kw, minEl:minEl[0], maxEl:maxEl[0], seedTxt:idSeed});
+  const premium = makePremium({total운, name, ilganNick:igNick, kw:ig.kw, minEl:minEl[0], maxEl:maxEl[0], seedTxt:idSeed});
 
   const sajuTime = saju.hasHour ? '' : '<div class="hint" style="text-align:center;margin-top:10px">※ 태어난 시간을 모르면 시주를 뺀 3주(년·월·일)로 풀이했어요.</div>';
 
@@ -1289,7 +1305,7 @@ function render(data){
     </div>
 
     <div class="ilgan-box reveal" style="animation-delay:.25s">
-      <div class="nick">“${ig.nick}”</div>
+      <div class="nick">“${igNick}”</div>
       <div class="sub" style="font-size:12px;color:var(--muted);margin-top:4px">일간 ${HS[dStem]}${HS_KR[dStem]} · ${ig.sym} · ${dayEl}(${'木火土金水'['목화토금수'.indexOf(dayEl)]})의 기운</div>
       <div class="kw">${ig.kw.map(k=>`<span>${k}</span>`).join('')}</div>
       <div class="desc">${ig.desc}</div>
